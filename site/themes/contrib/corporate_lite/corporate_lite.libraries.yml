@@ -73,6 +73,7 @@ global-styling:
       css/components/views.css: {}
       css/components/view-promoted-items.css: {}
       css/components/icon-features.css: {}
+      css/components/view-showcases-grid-2.css: {}
       css/components/flexslider.css: {}
 
 to-top:
