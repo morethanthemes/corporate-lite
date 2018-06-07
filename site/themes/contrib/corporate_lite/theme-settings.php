@@ -117,12 +117,32 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
     '#group' => 'tabs',
   );
 
+  $form['mtt_settings']['looknfeel_tab']['looknfeel']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-01-looknfeel.jpg" />
+   </a></div> ',
+  );
+
   $form['mtt_settings']['regions_tab']['regions'] = array(
     '#type' => 'details',
     '#title' => t('Region settings'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#group' => 'tabs',
+  );
+
+  $form['mtt_settings']['regions_tab']['regions']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-02-region.jpg" />
+   </a></div> ',
   );
 
   $form['mtt_settings']['post_tab']['post'] = array(
@@ -133,12 +153,32 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
     '#group' => 'tabs',
   );
 
+  $form['mtt_settings']['post_tab']['post']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-03-article.jpg" />
+   </a></div> ',
+  );
+
   $form['mtt_settings']['layout_tab']['layout_modes'] = array(
     '#type' => 'details',
     '#title' => t('Theme Layout'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#group' => 'tabs',
+  );
+
+  $form['mtt_settings']['layout_tab']['layout_modes']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-04-layout.jpg" />
+   </a></div> ',
   );
 
   $form['mtt_settings']['font_tab']['font'] = array(
@@ -149,12 +189,32 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
     '#group' => 'tabs',
   );
 
+  $form['mtt_settings']['font_tab']['font']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-05-fonts.jpg" />
+   </a></div> ',
+  );
+
   $form['mtt_settings']['slideshows_tab']['slideshow'] = array(
     '#type' => 'details',
     '#title' => t('Slideshow Settings'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
     '#group' => 'tabs',
+  );
+
+  $form['mtt_settings']['slideshows_tab']['slideshow']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-06-slideshow.jpg" />
+   </a></div> ',
   );
 
   $form['mtt_settings']['in_page_navigation']['in_page_navigation_settings'] = array(
@@ -165,6 +225,16 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
     '#group' => 'tabs',
   );
 
+  $form['mtt_settings']['in_page_navigation']['in_page_navigation_settings']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-07-navigation.jpg" />
+   </a></div> ',
+  );
+
   $form['mtt_settings']['isotope_tab'] = array(
     '#type' => 'details',
     '#title' => t('Isotope Filters'),
@@ -173,12 +243,32 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
     '#group' => 'tabs',
   );
 
+  $form['mtt_settings']['isotope_tab']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-08-isotope.jpg" />
+   </a></div> ',
+  );
+
   $form['mtt_settings']['google_maps_tab'] = array(
     '#type' => 'details',
     '#title' => t('Google Maps Settings'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#group' => 'tabs',
+  );
+
+  $form['mtt_settings']['google_maps_tab']['premium_description'] = array(
+   '#type' => 'item',
+   '#markup' =>
+   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
+   <div class="theme-settings-image-wrapper">
+   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
+   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-09-googlemaps.jpg" />
+   </a></div> ',
   );
 
 }
