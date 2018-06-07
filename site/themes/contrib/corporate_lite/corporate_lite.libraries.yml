@@ -244,6 +244,38 @@ in-page-navigation:
     - core/drupal
     - core/jquery.once
 
+owl-carousel:
+  version: 2.2.1
+  css:
+    base:
+      js/owl-carousel/assets/owl.carousel.min.css: { weight: 0 }
+      js/owl-carousel/assets/owl.theme.default.min.css: { weight: 0 }
+  js:
+    js/owl-carousel/owl.carousel.min.js: {}
+  dependencies:
+    - core/jquery
+
+owl-carousel-global:
+  version: VERSION
+  css:
+    component:
+      css/components/owl-carousel-global.css: {}
+  dependencies:
+    - corporate_lite/owl-carousel
+    - core/drupal
+    - core/jquery.once
+
+owl-carousel-promoted-posts-init:
+  version: VERSION
+  css:
+    component:
+      css/components/view-promoted-posts-carousel.css: {}
+  js:
+    js/init/owl-carousel-promoted-posts-init.js: {}
+  dependencies:
+    - corporate_lite/owl-carousel-global
+    - core/drupalSettings
+
 tooltip:
   version: VERSION
   css:

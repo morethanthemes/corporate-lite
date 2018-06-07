@@ -11,6 +11,7 @@ libraries:
   - corporate_lite/tooltip
   - corporate_lite/local-stylesheets
   - corporate_lite/in-page-navigation
+  - corporate_lite/owl-carousel-promoted-posts-init
 libraries-override:
   classy/base:
     css:
