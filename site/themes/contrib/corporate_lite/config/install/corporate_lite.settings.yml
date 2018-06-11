@@ -26,7 +26,7 @@ header_background_color: 'region--dark-typography region--white-background'
 header_blocks_paddings: false
 header_region_paddings: false
 fixed_header: true
-banner_layout_container: 'container'
+banner_layout_container: 'container-fluid'
 banner_background_color: 'region--dark-typography region--white-background'
 banner_blocks_paddings: true
 banner_region_paddings: true
