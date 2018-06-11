@@ -117,14 +117,24 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
     '#group' => 'tabs',
   );
 
-  $form['mtt_settings']['looknfeel_tab']['looknfeel']['premium_description'] = array(
-   '#type' => 'item',
-   '#markup' =>
-   '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
-   <div class="theme-settings-image-wrapper">
-   <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-01-looknfeel.jpg" />
-   </a></div> ',
+  $form['mtt_settings']['looknfeel_tab']['looknfeel']['color_scheme'] = array(
+    '#type' => 'select',
+    '#title' => t('Color Schemes'),
+    '#description'   => t('From the drop-down menu, select the color scheme you prefer.'),
+    '#default_value' => theme_get_setting('color_scheme', 'corporate_lite'),
+    '#options' => array(
+    'blue' => t('Blue'),
+    'khaki' => t('Khaki'),
+    'gold' => t('Gold'),
+    'gray' => t('Gray (Default)'),
+    'green' => t('Green'),
+    'lime' => t('Lime'),
+    'night-blue' => t('Night Blue'),
+    'orange' => t('Orange'),
+    'pink' => t('Pink'),
+    'purple' => t('Purple'),
+    'red' => t('Red'),
+    ),
   );
 
   $form['mtt_settings']['regions_tab']['regions'] = array(

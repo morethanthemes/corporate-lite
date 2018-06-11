@@ -393,11 +393,71 @@ local-stylesheets:
 #####################
 #   Color Schemes   #
 #####################
+color-blue:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-blue.css: { weight: 100, preprocess: FALSE }
+
+color-khaki:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-khaki.css: { weight: 100, preprocess: FALSE }
+
+color-gold:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-gold.css: { weight: 100, preprocess: FALSE }
+
 color-gray:
   version: VERSION
   css:
     theme:
       css/theme/color-gray.css: { weight: 100, preprocess: FALSE }
+
+color-green:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-green.css: { weight: 100, preprocess: FALSE }
+
+color-lime:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-lime.css: { weight: 100, preprocess: FALSE }
+
+color-night-blue:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-night-blue.css: { weight: 100, preprocess: FALSE }
+
+color-orange:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-orange.css: { weight: 100, preprocess: FALSE }
+
+color-pink:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-pink.css: { weight: 100, preprocess: FALSE }
+
+color-purple:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-purple.css: { weight: 100, preprocess: FALSE }
+
+color-red:
+  version: VERSION
+  css:
+    theme:
+      css/theme/color-red.css: { weight: 100, preprocess: FALSE }
 
 ####################
 # Fonts collection #
