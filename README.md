@@ -3,7 +3,7 @@ Corporate Lite
 
 This repository contains the Drupal installation that runs at [morethanthemes.com](http://www.morethanthemes.com/drupal-themes/free) and demonstrates the ["Corporate Lite"](https://drupal.org/project/corporate_lite) Drupal theme. We use this repository in order to maintain the above mentioned site and develop the corresponding theme.
 
-You are welcome however to grab this code and have the demonstration site running on your end. By doing this you have the chance to see the ["Corporate Lite" theme in action](http://demo.drupalizing.com/?theme=corporate-lite/site) exactly the way it looks like on our demo.
+You are welcome however to grab this code and have the demonstration site running on your end. By doing this you have the chance to see the ["Corporate Lite" theme in action](http://demo.drupalizing.com/corporate-lite/site) exactly the way it looks like on our demo.
 
 Installation instructions
 --------------
