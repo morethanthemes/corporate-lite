@@ -10,6 +10,9 @@ use Drupal\flexslider\Entity\Flexslider;
 
 /**
  * Implements hook_libraries_info().
+ *
+ * @TODO: Remove this once 8.9 is the minimal core version and Libraries is no
+ * longer required.
  */
 function flexslider_libraries_info() {
   $libraries['flexslider'] = [
@@ -37,6 +40,9 @@ function flexslider_libraries_info() {
 
 /**
  * Implements hook_libraries_info_alter().
+ *
+ * @TODO: Remove this once 8.9 is the minimal core version and Libraries is no
+ * longer required.
  */
 function flexslider_libraries_info_alter(&$libraries) {
   $debug = \Drupal::config('flexslider.settings')->get('flexslider_debug');
@@ -80,18 +86,29 @@ function flexslider_library_info_alter(&$libraries, $extension) {
       }
     }
 
-    $library_path = libraries_get_path('flexslider');
-    if (strpos($library_path, '/') !== 0) {
-      $library_path = '/' . $library_path;
+    $standard = '/libraries/flexslider';
+    // @TODO Remove this conditional once 8.9 is the minimum supported core
+    // version.
+    if (\Drupal::hasService('library.libraries_directory_file_finder')) {
+      /** @var \Drupal\Core\Asset\LibrariesDirectoryFileFinder $library_file_finder */
+      $library_file_finder = \Drupal::service('library.libraries_directory_file_finder');
+      $library_path = '/' . $library_file_finder->find('flexslider');
     }
+    elseif (\Drupal::moduleHandler()->moduleExists('libraries')) {
+      $library_path = '/' . libraries_get_path('flexslider');
+      // Set correct path to where the library was downloaded if not standard.
+      if ($library_path !== $standard) {
+        $libraries['flexslider']['js'][$library_path . '/jquery.flexslider-min.js'] = $libraries['flexslider']['js'][$standard . '/jquery.flexslider-min.js'];
+        unset($libraries['flexslider']['js'][$standard . '/jquery.flexslider-min.js']);
 
-    // Set the correct path to where the library was downloaded.
-    $libraries['flexslider']['js'][$library_path . '/jquery.flexslider-min.js'] = $libraries['flexslider']['js']['jquery.flexslider-min.js'];
-    unset($libraries['flexslider']['js']['jquery.flexslider-min.js']);
-
-    if (!empty($libraries['flexslider']['css'])) {
-      $libraries['flexslider']['css']['component'][$library_path . '/flexslider.css'] = $libraries['flexslider']['css']['component']['flexslider.css'];
-      unset($libraries['flexslider']['css']['component']['flexslider.css']);
+        if (!empty($libraries['flexslider']['css'])) {
+          $libraries['flexslider']['css']['component'][$library_path . '/flexslider.css'] = $libraries['flexslider']['css']['component'][$standard . '/flexslider.css'];
+          unset($libraries['flexslider']['css']['component'][$standard . '/flexslider.css']);
+        }
+      }
+    }
+    else {
+      $library_path = $standard;
     }
 
     // Enable debug mode.
@@ -145,8 +162,7 @@ function flexslider_help($route_name, $route_match) {
       $output .= t('An <em>option set</em> defines exactly how a flexslider image gallery looks and behaves on your site.');
       $output .= '<br/>';
       $output .= t('For a full documentation of all options, refer to the official <a href=":docs" target="_new">FlexSlider documentation</a>.', ['@docs' => Url::fromUri('http://www.woothemes.com/flexslider/')->getUri()]);
-      return
-        '<p>' . $output . '</p>';
+      return '<p>' . $output . '</p>';
   }
 }
 
@@ -203,7 +219,7 @@ function flexslider_optionset_list() {
  *
  * @param string $id
  *   optional ID Attribute for FlexSlider container.
- * @param object $optionset
+ * @param object|string $optionset
  *   optional Option set to load or the machine name of an existing optionset.
  *
  * @return array

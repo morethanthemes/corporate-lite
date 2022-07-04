@@ -1,0 +1,13 @@
+name: JSON:API
+type: module
+description: Exposes entities as a JSON:API-specification-compliant web API.
+package: Web services
+# version: VERSION
+configure: jsonapi.settings
+dependencies:
+  - drupal:serialization
+
+# Information added by Drupal.org packaging script on 2022-06-21
+version: '9.4.1'
+project: 'drupal'
+datestamp: 1655845587

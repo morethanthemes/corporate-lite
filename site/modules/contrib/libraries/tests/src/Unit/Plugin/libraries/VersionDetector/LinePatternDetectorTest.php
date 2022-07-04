@@ -5,6 +5,7 @@ namespace Drupal\Tests\libraries\Unit\Plugin\libraries\VersionDetector;
 use Drupal\libraries\ExternalLibrary\Local\LocalLibraryInterface;
 use Drupal\libraries\ExternalLibrary\Version\VersionedLibraryInterface;
 use Drupal\libraries\Plugin\libraries\VersionDetector\LinePatternDetector;
+use Drupal\libraries\ExternalLibrary\Exception\UnknownLibraryVersionException;
 use Drupal\Tests\UnitTestCase;
 use org\bovigo\vfs\vfsStream;
 
@@ -22,11 +23,10 @@ class LinePatternDetectorTest extends UnitTestCase {
   /**
    * Tests that version detection fails for a non-local library.
    *
-   * @expectedException \Drupal\libraries\ExternalLibrary\Exception\UnknownLibraryVersionException
-   *
    * @covers ::detectVersion
    */
   public function testDetectVersionNonLocal() {
+    $this->expectException(UnknownLibraryVersionException::class);
     $library = $this->prophesize(VersionedLibraryInterface::class);
     $detector = $this->setupDetector();
     $detector->detectVersion($library->reveal());
@@ -35,11 +35,10 @@ class LinePatternDetectorTest extends UnitTestCase {
   /**
    * Tests that version detection fails for a missing file.
    *
-   * @expectedException \Drupal\libraries\ExternalLibrary\Exception\UnknownLibraryVersionException
-   *
    * @covers ::detectVersion
    */
   public function testDetectVersionMissingFile() {
+    $this->expectException(UnknownLibraryVersionException::class);
     $library = $this->setupLibrary();
 
     $detector = $this->setupDetector(['file' => 'CHANGELOG.txt']);

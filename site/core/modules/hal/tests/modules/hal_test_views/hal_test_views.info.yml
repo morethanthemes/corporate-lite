@@ -1,0 +1,13 @@
+name: 'HAL test views'
+type: module
+description: 'Provides default views for views HAL tests.'
+package: Testing
+# version: VERSION
+dependencies:
+  - drupal:rest
+  - drupal:views
+
+# Information added by Drupal.org packaging script on 2022-06-21
+version: '9.4.1'
+project: 'drupal'
+datestamp: 1655845587

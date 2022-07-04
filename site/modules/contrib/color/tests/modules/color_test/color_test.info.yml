@@ -1,0 +1,10 @@
+name: 'Color test'
+type: module
+description: 'Provides test helpers for color module.'
+package: Testing
+core_version_requirement: '>=9.4'
+
+# Information added by Drupal.org packaging script on 2022-04-19
+version: '1.0.1'
+project: 'color'
+datestamp: 1650407216

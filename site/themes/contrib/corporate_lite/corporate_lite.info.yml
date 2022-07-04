@@ -3,6 +3,7 @@ type: theme
 base theme: classy
 description: 'The free version of <a target="_blank" href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&amp;utm_medium=theme-settings&amp;utm_campaign=free-themes">Corporate+ Drupal 8 theme</a>'
 core: 8.x
+core_version_requirement: ^8 || ^9
 libraries:
   - corporate_lite/fontawesome
   - corporate_lite/global-styling
@@ -53,3 +54,8 @@ regions:
   sub_footer_first: 'Subfooter First'
   footer: 'Subfooter Second'
   hidden_blocks_collection: 'Hidden blocks collection'
+
+# Information added by Drupal.org packaging script on 2020-12-01
+version: '8.x-1.2'
+project: 'corporate_lite'
+datestamp: 1606824939

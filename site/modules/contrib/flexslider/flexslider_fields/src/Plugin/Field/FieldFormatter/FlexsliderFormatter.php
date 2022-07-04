@@ -65,8 +65,8 @@ class FlexsliderFormatter extends ImageFormatter {
   public function viewElements(FieldItemListInterface $items, $langcode) {
 
     $images = parent::viewElements($items, $langcode);
-
-    return $this->viewImages($images, $this->getSettings());
+    $elements[] = $this->viewImages($images, $this->getSettings());
+    return $elements;
 
   }
 

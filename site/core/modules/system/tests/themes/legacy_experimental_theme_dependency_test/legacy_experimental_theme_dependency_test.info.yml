@@ -1,0 +1,10 @@
+name: 'Legacy experimental dependency test'
+type: theme
+description: 'Legacy experimental dependency test theme.'
+# version: VERSION
+base theme: legacy_experimental_theme_test
+
+# Information added by Drupal.org packaging script on 2022-06-21
+version: '9.4.1'
+project: 'drupal'
+datestamp: 1655845587

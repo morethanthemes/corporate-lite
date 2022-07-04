@@ -22,14 +22,14 @@ class LanguageNegotiationUrlTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
 
     // Set up some languages to be used by the language-based path processor.
-    $language_de = $this->getMock('\Drupal\Core\Language\LanguageInterface');
+    $language_de = $this->createMock('\Drupal\Core\Language\LanguageInterface');
     $language_de->expects($this->any())
       ->method('getId')
       ->will($this->returnValue('de'));
-    $language_en = $this->getMock('\Drupal\Core\Language\LanguageInterface');
+    $language_en = $this->createMock('\Drupal\Core\Language\LanguageInterface');
     $language_en->expects($this->any())
       ->method('getId')
       ->will($this->returnValue('en'));
@@ -61,7 +61,7 @@ class LanguageNegotiationUrlTest extends UnitTestCase {
   }
 
   /**
-   * Test path prefix language negotiation and outbound path processing.
+   * Tests path prefix language negotiation and outbound path processing.
    *
    * @dataProvider providerTestPathPrefix
    */
@@ -150,7 +150,7 @@ class LanguageNegotiationUrlTest extends UnitTestCase {
   }
 
   /**
-   * Test domain language negotiation and outbound path processing.
+   * Tests domain language negotiation and outbound path processing.
    *
    * @dataProvider providerTestDomain
    */
@@ -256,7 +256,9 @@ class LanguageNegotiationUrlTest extends UnitTestCase {
 namespace Drupal\language\Plugin\LanguageNegotiation;
 
 if (!function_exists('base_path')) {
+
   function base_path() {
     return '/';
   }
+
 }

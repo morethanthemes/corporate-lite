@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\views\Functional\Plugin;
 
+use Drupal\Core\Database\Database;
 use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 use Drupal\Tests\views\Functional\ViewTestBase;
 use Drupal\views\Entity\View;
@@ -23,29 +24,38 @@ class StyleTableTest extends ViewTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp($import_test_views = TRUE) {
-    parent::setUp($import_test_views);
+  protected $defaultTheme = 'stark';
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp($import_test_views = TRUE, $modules = ['views_test_config']): void {
+    parent::setUp($import_test_views, $modules);
 
     $this->enableViewsTestModule();
   }
 
   /**
-   * Test table caption/summary/description.
+   * Tests table caption/summary/description.
    */
   public function testAccessibilitySettings() {
     $this->drupalGet('test-table');
 
     $result = $this->xpath('//caption/child::text()');
-    $this->assertTrue(count($result), 'The caption appears on the table.');
-    $this->assertEqual(trim($result[0]->getText()), 'caption-text');
+    $this->assertNotEmpty($result, 'The caption appears on the table.');
+    $this->assertEquals('caption-text', trim($result[0]->getText()));
 
     $result = $this->xpath('//summary/child::text()');
-    $this->assertTrue(count($result), 'The summary appears on the table.');
-    $this->assertEqual(trim($result[0]->getText()), 'summary-text');
+    $this->assertNotEmpty($result, 'The summary appears on the table.');
+    $this->assertEquals('summary-text', trim($result[0]->getText()));
+    // Check that the summary has the right accessibility settings.
+    $summary = $this->xpath('//summary')[0];
+    $this->assertTrue($summary->hasAttribute('role'));
+    $this->assertTrue($summary->hasAttribute('aria-expanded'));
 
-    $result = $this->xpath('//caption/details/child::text()');
-    $this->assertTrue(count($result), 'The table description appears on the table.');
-    $this->assertEqual(trim($result[0]->getText()), 'description-text');
+    $result = $this->xpath('//caption/details/child::text()[normalize-space()]');
+    $this->assertNotEmpty($result, 'The table description appears on the table.');
+    $this->assertEquals('description-text', trim($result[0]->getText()));
 
     // Remove the caption and ensure the caption is not displayed anymore.
     $view = View::load('test_table');
@@ -55,7 +65,7 @@ class StyleTableTest extends ViewTestBase {
 
     $this->drupalGet('test-table');
     $result = $this->xpath('//caption/child::text()');
-    $this->assertFalse(trim($result[0]->getText()), 'Ensure that the caption disappears.');
+    $this->assertEmpty(trim($result[0]->getText()), 'Ensure that the caption disappears.');
 
     // Remove the table summary.
     $display = &$view->getDisplay('default');
@@ -64,7 +74,7 @@ class StyleTableTest extends ViewTestBase {
 
     $this->drupalGet('test-table');
     $result = $this->xpath('//summary/child::text()');
-    $this->assertFalse(count($result), 'Ensure that the summary disappears.');
+    $this->assertEmpty($result, 'Ensure that the summary disappears.');
 
     // Remove the table description.
     $display = &$view->getDisplay('default');
@@ -72,12 +82,12 @@ class StyleTableTest extends ViewTestBase {
     $view->save();
 
     $this->drupalGet('test-table');
-    $result = $this->xpath('//caption/details/child::text()');
-    $this->assertFalse(count($result), 'Ensure that the description disappears.');
+    $result = $this->xpath('//caption/details/child::text()[normalize-space()]');
+    $this->assertEmpty($result, 'Ensure that the description disappears.');
   }
 
   /**
-   * Test table fields in columns.
+   * Tests table fields in columns.
    */
   public function testFieldInColumns() {
     $this->drupalGet('test-table');
@@ -87,9 +97,9 @@ class StyleTableTest extends ViewTestBase {
     // do: "views-field-job-1" would also contain "views-field-job".
     // @see Drupal\system\Tests\Form\ElementTest::testButtonClasses().
     $result = $this->xpath('//tbody/tr/td[contains(concat(" ", @class, " "), " views-field-job ")]');
-    $this->assertTrue(count($result), 'Ensure there is a td with the class views-field-job');
+    $this->assertGreaterThan(0, count($result), 'Ensure there is a td with the class views-field-job');
     $result = $this->xpath('//tbody/tr/td[contains(concat(" ", @class, " "), " views-field-job-1 ")]');
-    $this->assertTrue(count($result), 'Ensure there is a td with the class views-field-job-1');
+    $this->assertGreaterThan(0, count($result), 'Ensure there is a td with the class views-field-job-1');
 
     // Combine the second job-column with the first one, with ', ' as separator.
     $view = View::load('test_table');
@@ -102,20 +112,20 @@ class StyleTableTest extends ViewTestBase {
     $this->drupalGet('test-table');
 
     $result = $this->xpath('//tbody/tr/td[contains(concat(" ", @class, " "), " views-field-job views-field-job-1 ")]');
-    $this->assertTrue(count($result), 'Ensure that the job column class names are joined into a single column');
+    $this->assertGreaterThan(0, count($result), 'Ensure that the job column class names are joined into a single column');
 
     $result = $this->xpath('//tbody/tr/td[contains(., "Drummer, Drummer")]');
-    $this->assertTrue(count($result), 'Ensure the job column values are joined into a single column');
+    $this->assertGreaterThan(0, count($result), 'Ensure the job column values are joined into a single column');
   }
 
   /**
-   * Test that a number with the value of "0" is displayed in the table.
+   * Tests that a number with the value of "0" is displayed in the table.
    */
   public function testNumericFieldVisible() {
-    // Adds a new datapoint in the views_test_data table to have a person with
+    // Adds a new data point in the views_test_data table to have a person with
     // an age of zero.
     $data_set = $this->dataSet();
-    $query = db_insert('views_test_data')
+    $query = Database::getConnection()->insert('views_test_data')
       ->fields(array_keys($data_set[0]));
     $query->values([
       'name' => 'James McCartney',
@@ -129,14 +139,14 @@ class StyleTableTest extends ViewTestBase {
     $this->drupalGet('test-table');
 
     $result = $this->xpath('//tbody/tr/td[contains(., "Baby")]');
-    $this->assertTrue(count($result), 'Ensure that the baby is found.');
+    $this->assertGreaterThan(0, count($result), 'Ensure that the baby is found.');
 
     $result = $this->xpath('//tbody/tr/td[text()=0]');
-    $this->assertTrue(count($result), 'Ensure that the baby\'s age is shown');
+    $this->assertGreaterThan(0, count($result), 'Ensure that the baby\'s age is shown');
   }
 
   /**
-   * Test that empty columns are hidden when empty_column is set.
+   * Tests that empty columns are hidden when empty_column is set.
    */
   public function testEmptyColumn() {
     // Empty the 'job' data.
@@ -147,11 +157,11 @@ class StyleTableTest extends ViewTestBase {
     $this->drupalGet('test-table');
 
     // Test that only one of the job columns still shows.
-    $result = $this->xpath('//thead/tr/th/a[text()="Job"]');
-    $this->assertEqual(count($result), 1, 'Ensure that empty column header is hidden.');
+    // Ensure that empty column header is hidden.
+    $this->assertSession()->elementsCount('xpath', '//thead/tr/th/a[text()="Job"]', 1);
 
     $result = $this->xpath('//tbody/tr/td[contains(concat(" ", @class, " "), " views-field-job-1 ")]');
-    $this->assertEqual(count($result), 0, 'Ensure the empty table cells are hidden.');
+    $this->assertCount(0, $result, 'Ensure the empty table cells are hidden.');
   }
 
   /**
@@ -200,11 +210,13 @@ class StyleTableTest extends ViewTestBase {
     ];
 
     // Ensure that we don't find the caption containing unsafe markup.
-    $this->assertNoRaw($unsafe_markup, "Didn't find caption containing unsafe markup.");
+    $this->assertSession()->responseNotContains($unsafe_markup);
+    // Ensure that the summary isn't shown.
+    $this->assertEmpty($this->xpath('//caption/details'));
 
     // Ensure that all expected captions are found.
     foreach ($expected_captions as $raw_caption) {
-      $this->assertEscaped($raw_caption);
+      $this->assertSession()->assertEscaped($raw_caption);
     }
 
     $display = &$view->getDisplay('default');
@@ -222,11 +234,11 @@ class StyleTableTest extends ViewTestBase {
     ];
 
     // Ensure that we don't find the caption containing unsafe markup.
-    $this->assertNoRaw($unsafe_markup, "Didn't find caption containing unsafe markup.");
+    $this->assertSession()->responseNotContains($unsafe_markup);
 
     // Ensure that all expected captions are found.
     foreach ($expected_captions as $raw_caption) {
-      $this->assertEscaped($raw_caption);
+      $this->assertSession()->assertEscaped($raw_caption);
     }
   }
 
@@ -239,9 +251,9 @@ class StyleTableTest extends ViewTestBase {
     $url = 'test-table';
     $this->drupalGet($url);
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertEquals('MISS', $this->drupalGetHeader(DynamicPageCacheSubscriber::HEADER));
+    $this->assertSession()->responseHeaderEquals(DynamicPageCacheSubscriber::HEADER, 'MISS');
     $this->drupalGet($url);
-    $this->assertEquals('HIT', $this->drupalGetHeader(DynamicPageCacheSubscriber::HEADER));
+    $this->assertSession()->responseHeaderEquals(DynamicPageCacheSubscriber::HEADER, 'HIT');
   }
 
 }

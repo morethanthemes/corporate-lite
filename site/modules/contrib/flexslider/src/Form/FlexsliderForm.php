@@ -5,8 +5,6 @@ namespace Drupal\flexslider\Form;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Link;
-use Drupal\Core\Url;
 use Drupal\flexslider\FlexsliderDefaults;
 
 /**
@@ -246,7 +244,7 @@ class FlexsliderForm extends EntityForm {
           ':input[name="controlNav"]' => ['value' => 'thumbnails'],
         ],
       ],
-      '#element_validate' => ['::validateMinimumVersion22', '::validateThumbnailOptions'],
+      '#element_validate' => ['::validateThumbnailOptions'],
     ];
     $form['nav_controls']['thumbCaptionsBoth'] = [
       '#type' => 'checkbox',
@@ -258,7 +256,7 @@ class FlexsliderForm extends EntityForm {
           ':input[name="controlNav"]' => ['value' => 'thumbnails'],
         ],
       ],
-      '#element_validate' => ['::validateMinimumVersion22', '::validateThumbnailOptions'],
+      '#element_validate' => ['::validateThumbnailOptions'],
     ];
     $form['nav_controls']['keyboard'] = [
       '#type' => 'checkbox',
@@ -418,13 +416,13 @@ class FlexsliderForm extends EntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created the %label FlexSlider optionset.', [
+        $this->messenger()->addStatus($this->t('Created the %label FlexSlider optionset.', [
           '%label' => $flexslider->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved the %label FlexSlider optionset.', [
+        $this->messenger()->addStatus($this->t('Saved the %label FlexSlider optionset.', [
           '%label' => $flexslider->label(),
         ]));
     }
@@ -476,26 +474,6 @@ class FlexsliderForm extends EntityForm {
     // @todo
     // @see form_error()
     return TRUE;
-  }
-
-  /**
-   * Validate the correct version for thumbnail options.
-   */
-  public function validateMinimumVersion22(array &$element, FormStateInterface $form_state) {
-    $lib = libraries_detect('flexslider');
-    if (!isset($lib['version'])) {
-      drupal_set_message($this->t('Unable to detect FlexSlider library version. Some options may not function properly. Please review the README.md file for installation instructions.'), 'warning');
-    }
-    else {
-      $version = $lib['version'];
-      $required = "2.2";
-      if ($element['#value'] && !version_compare($version, $required, '>=')) {
-        $form_state->setError($element, $this->t('To use %name you must install FlexSlider version !required or higher.', [
-          '%name' => $element['#title'],
-          '!required' => Link::fromTextAndUrl($required, Url::fromUri('https://github.com/woothemes/FlexSlider/tree/version/2.2')),
-        ]));
-      }
-    }
   }
 
   /**

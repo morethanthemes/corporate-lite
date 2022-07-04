@@ -15,7 +15,7 @@ class UserTest extends MigrateSqlSourceTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['user', 'migrate_drupal'];
+  protected static $modules = ['user', 'migrate_drupal'];
 
   /**
    * {@inheritdoc}
@@ -24,6 +24,12 @@ class UserTest extends MigrateSqlSourceTestBase {
     $tests = [];
 
     // The source data.
+    $tests[0]['source_data']['field_config'] = [
+      [
+        'id' => '11',
+        'translatable' => '0',
+      ],
+    ];
     $tests[0]['source_data']['field_config_instance'] = [
       [
         'id' => '33',
@@ -60,7 +66,7 @@ class UserTest extends MigrateSqlSourceTestBase {
       [
         'uid' => '2',
         'name' => 'Odo',
-        'pass' => '$S$DVpvPItXvnsmF3giVEe7Jy2lG.SCoEs8uKwpHsyPvdeNAaNZYxZ8',
+        'pass' => 'password',
         'mail' => 'odo@local.host',
         'theme' => '',
         'signature' => '',
@@ -88,7 +94,7 @@ class UserTest extends MigrateSqlSourceTestBase {
       [
         'uid' => '2',
         'name' => 'Odo',
-        'pass' => '$S$DVpvPItXvnsmF3giVEe7Jy2lG.SCoEs8uKwpHsyPvdeNAaNZYxZ8',
+        'pass' => 'password',
         'mail' => 'odo@local.host',
         'signature' => '',
         'signature_format' => 'filtered_html',

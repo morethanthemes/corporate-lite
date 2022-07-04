@@ -130,8 +130,6 @@ trait FlexsliderFormatterTrait {
 
       // Prepare the slide item render array.
       $item = [];
-      // @todo Should find a way of dealing with render arrays instead of the actual output
-      $item['slide'] = render($image);
 
       // Check caption settings.
       if ($formatter_settings['caption'] == 1) {
@@ -140,6 +138,9 @@ trait FlexsliderFormatterTrait {
       elseif ($formatter_settings['caption'] == 'alt') {
         $item['caption'] = ['#markup' => Xss::filterAdmin($image['#item']->alt)];
       }
+
+      // @todo Should find a way of dealing with render arrays instead of the actual output
+      $item['slide'] = render($image);
 
       $items[$delta] = $item;
     }
@@ -187,17 +188,25 @@ trait FlexsliderFormatterTrait {
       'alt' => $formatter->t('Image ALT attribute'),
     ];
 
+    $default_value = $formatter->getSetting('caption');
+
     // Remove the options that are not available.
     $action_fields = [];
-    if ($field_settings['title_field'] == FALSE) {
+    if ($field_settings['title_field'] === FALSE) {
       unset($caption_options[1]);
       // User action required on the image title.
       $action_fields[] = 'title';
+      if ($default_value == 1) {
+        $default_value = '';
+      }
     }
-    if ($field_settings['alt_field'] == FALSE) {
+    if ($field_settings['alt_field'] === FALSE) {
       unset($caption_options['alt']);
       // User action required on the image alt.
       $action_fields[] = 'alt';
+      if ($default_value == 'alt') {
+        $default_value = '';
+      }
     }
 
     // Create the caption element.
@@ -205,6 +214,7 @@ trait FlexsliderFormatterTrait {
       '#title' => $formatter->t('Choose a caption source'),
       '#type' => 'select',
       '#options' => $caption_options,
+      '#default_value' => $default_value,
     ];
 
     // If the image field doesn't have all of the suitable caption sources,
@@ -238,9 +248,6 @@ trait FlexsliderFormatterTrait {
       if (count($action_fields) >= 2) {
         $element['caption']['#disabled'] = TRUE;
       }
-    }
-    else {
-      $element['caption']['#default_value'] = $formatter->getSetting('caption');
     }
 
     return $element;

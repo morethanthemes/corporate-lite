@@ -16,8 +16,8 @@ class LogMessageParser implements LogMessageParserInterface {
     if (($start = strpos($message, '{')) !== FALSE && strpos($message, '}') > $start) {
       $has_psr3 = TRUE;
       // Transform PSR3 style messages containing placeholders to
-      // \Drupal\Component\Utility\SafeMarkup::format() style.
-      $message = preg_replace('/\{(.*)\}/U', '@$1', $message);
+      // \Drupal\Component\Render\FormattableMarkup style.
+      $message = preg_replace('/\{([^\{}]*)\}/U', '@$1', $message);
     }
     foreach ($context as $key => $variable) {
       // PSR3 style placeholders.
@@ -30,7 +30,7 @@ class LogMessageParser implements LogMessageParserInterface {
         }
       }
       if (!empty($key) && ($key[0] === '@' || $key[0] === '%' || $key[0] === '!')) {
-        // The key is now in \Drupal\Component\Utility\SafeMarkup::format() style.
+        // The key is now in \Drupal\Component\Render\FormattableMarkup style.
         $variables[$key] = $variable;
       }
     }

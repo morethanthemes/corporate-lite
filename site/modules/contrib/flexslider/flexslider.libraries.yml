@@ -9,10 +9,10 @@ flexslider:
     url: https://github.com/woothemes/FlexSlider/blob/master/LICENSE.md
     gpl-compatible: true
   js:
-    jquery.flexslider-min.js: { minified: true }
+    /libraries/flexslider/jquery.flexslider-min.js: { minified: true }
   css:
     component:
-      flexslider.css: {}
+      /libraries/flexslider/flexslider.css: {}
 
 integration:
   js:

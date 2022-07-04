@@ -2,8 +2,9 @@
 
 namespace Drupal\KernelTests\Core\Image;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Image\ImageInterface;
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Site\Settings;
 use Drupal\KernelTests\KernelTestBase;
 
@@ -12,6 +13,7 @@ use Drupal\KernelTests\KernelTestBase;
  * crop, scale and crop, and desaturate.
  *
  * @group Image
+ * @requires extension gd
  */
 class ToolkitGdTest extends KernelTestBase {
 
@@ -22,7 +24,11 @@ class ToolkitGdTest extends KernelTestBase {
    */
   protected $imageFactory;
 
-  // Colors that are used in testing.
+  /**
+   * Colors that are used in testing.
+   *
+   * @var array
+   */
   protected $black       = [0, 0, 0, 0];
   protected $red         = [255, 0, 0, 0];
   protected $green       = [0, 255, 0, 0];
@@ -30,8 +36,13 @@ class ToolkitGdTest extends KernelTestBase {
   protected $yellow      = [255, 255, 0, 0];
   protected $white       = [255, 255, 255, 0];
   protected $transparent = [0, 0, 0, 127];
-  // Used as rotate background colors.
-  protected $fuchsia            = [255, 0, 255, 0];
+
+  /**
+   * Used as rotate background colors.
+   *
+   * @var array
+   */
+  protected $fuchsia           = [255, 0, 255, 0];
   protected $rotateTransparent = [255, 255, 255, 127];
 
   protected $width = 40;
@@ -42,26 +53,17 @@ class ToolkitGdTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system', 'simpletest'];
+  protected static $modules = ['system'];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
+    $this->installConfig(['system']);
     // Set the image factory service.
     $this->imageFactory = $this->container->get('image.factory');
-  }
-
-  protected function checkRequirements() {
-    // GD2 support is available.
-    if (!function_exists('imagegd2')) {
-      return [
-        'Image manipulations for the GD toolkit cannot run because the GD toolkit is not available.',
-      ];
-    }
-    return parent::checkRequirements();
   }
 
   /**
@@ -105,12 +107,12 @@ class ToolkitGdTest extends KernelTestBase {
   public function testManipulations() {
 
     // Test that the image factory is set to use the GD toolkit.
-    $this->assertEqual($this->imageFactory->getToolkitId(), 'gd', 'The image factory is set to use the \'gd\' image toolkit.');
+    $this->assertEquals('gd', $this->imageFactory->getToolkitId(), 'The image factory is set to use the \'gd\' image toolkit.');
 
     // Test the list of supported extensions.
-    $expected_extensions = ['png', 'gif', 'jpeg', 'jpg', 'jpe'];
+    $expected_extensions = ['png', 'gif', 'jpeg', 'jpg', 'jpe', 'webp'];
     $supported_extensions = $this->imageFactory->getSupportedExtensions();
-    $this->assertEqual($expected_extensions, array_intersect($expected_extensions, $supported_extensions));
+    $this->assertEquals($expected_extensions, array_intersect($expected_extensions, $supported_extensions));
 
     // Test that the supported extensions map to correct internal GD image
     // types.
@@ -119,7 +121,8 @@ class ToolkitGdTest extends KernelTestBase {
       'gif' => IMAGETYPE_GIF,
       'jpeg' => IMAGETYPE_JPEG,
       'jpg' => IMAGETYPE_JPEG,
-      'jpe' => IMAGETYPE_JPEG
+      'jpe' => IMAGETYPE_JPEG,
+      'webp' => IMAGETYPE_WEBP,
     ];
     $image = $this->imageFactory->get();
     foreach ($expected_image_types as $extension => $expected_image_type) {
@@ -137,6 +140,7 @@ class ToolkitGdTest extends KernelTestBase {
       'image-test.gif',
       'image-test-no-transparency.gif',
       'image-test.jpg',
+      'img-test.webp',
     ];
 
     // Setup a list of tests to perform on each type.
@@ -211,6 +215,13 @@ class ToolkitGdTest extends KernelTestBase {
         'arguments' => ['extension' => 'png'],
         'corners' => $default_corners,
       ],
+      'convert_webp' => [
+        'function' => 'convert',
+        'width' => 40,
+        'height' => 20,
+        'arguments' => ['extension' => 'webp'],
+        'corners' => $default_corners,
+      ],
     ];
 
     // Systems using non-bundled GD2 don't have imagerotate. Test if available.
@@ -266,7 +277,7 @@ class ToolkitGdTest extends KernelTestBase {
             array_fill(0, 3, 76) + [3 => 0],
             array_fill(0, 3, 149) + [3 => 0],
             array_fill(0, 3, 29) + [3 => 0],
-            array_fill(0, 3, 225) + [3 => 127]
+            array_fill(0, 3, 225) + [3 => 127],
           ],
         ],
       ];
@@ -274,22 +285,22 @@ class ToolkitGdTest extends KernelTestBase {
 
     // Prepare a directory for test file results.
     $directory = Settings::get('file_public_path') . '/imagetest';
-    file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+    \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
 
     foreach ($files as $file) {
       foreach ($operations as $op => $values) {
         // Load up a fresh image.
-        $image = $this->imageFactory->get(drupal_get_path('module', 'simpletest') . '/files/' . $file);
+        $image = $this->imageFactory->get('core/tests/fixtures/files/' . $file);
         $toolkit = $image->getToolkit();
         if (!$image->isValid()) {
-          $this->fail(SafeMarkup::format('Could not load image %file.', ['%file' => $file]));
+          $this->fail(new FormattableMarkup('Could not load image %file.', ['%file' => $file]));
           continue 2;
         }
         $image_original_type = $image->getToolkit()->getType();
 
         // All images should be converted to truecolor when loaded.
         $image_truecolor = imageistruecolor($toolkit->getResource());
-        $this->assertTrue($image_truecolor, SafeMarkup::format('Image %file after load is a truecolor image.', ['%file' => $file]));
+        $this->assertTrue($image_truecolor, new FormattableMarkup('Image %file after load is a truecolor image.', ['%file' => $file]));
 
         // Store the original GD resource.
         $old_res = $toolkit->getResource();
@@ -301,7 +312,9 @@ class ToolkitGdTest extends KernelTestBase {
         // been destroyed.
         $new_res = $toolkit->getResource();
         if ($new_res !== $old_res) {
-          $this->assertFalse(is_resource($old_res), SafeMarkup::format("'%operation' destroyed the original resource.", ['%operation' => $values['function']]));
+          // @todo In https://www.drupal.org/node/3133236 convert this to
+          //   $this->assertIsNotResource($old_res).
+          $this->assertFalse(is_resource($old_res), new FormattableMarkup("'%operation' destroyed the original resource.", ['%operation' => $values['function']]));
         }
 
         // To keep from flooding the test with assert values, make a general
@@ -321,8 +334,8 @@ class ToolkitGdTest extends KernelTestBase {
         $file_path = $directory . '/' . $op . image_type_to_extension($image->getToolkit()->getType());
         $image->save($file_path);
 
-        $this->assertTrue($correct_dimensions_real, SafeMarkup::format('Image %file after %action action has proper dimensions.', ['%file' => $file, '%action' => $op]));
-        $this->assertTrue($correct_dimensions_object, SafeMarkup::format('Image %file object after %action action is reporting the proper height and width values.', ['%file' => $file, '%action' => $op]));
+        $this->assertTrue($correct_dimensions_real, new FormattableMarkup('Image %file after %action action has proper dimensions.', ['%file' => $file, '%action' => $op]));
+        $this->assertTrue($correct_dimensions_object, new FormattableMarkup('Image %file object after %action action is reporting the proper height and width values.', ['%file' => $file, '%action' => $op]));
 
         // JPEG colors will always be messed up due to compression. So we skip
         // these tests if the original or the result is in jpeg format.
@@ -350,14 +363,17 @@ class ToolkitGdTest extends KernelTestBase {
                 $x = 0;
                 $y = 0;
                 break;
+
               case 1:
                 $x = $image->getWidth() - 1;
                 $y = 0;
                 break;
+
               case 2:
                 $x = $image->getWidth() - 1;
                 $y = $image->getHeight() - 1;
                 break;
+
               case 3:
                 $x = 0;
                 $y = $image->getHeight() - 1;
@@ -368,7 +384,7 @@ class ToolkitGdTest extends KernelTestBase {
             // conversion. The convert operation cannot handle that correctly.
             if ($image->getToolkit()->getType() == $image_original_type || $corner != $this->transparent) {
               $correct_colors = $this->colorsAreEqual($color, $corner);
-              $this->assertTrue($correct_colors, SafeMarkup::format('Image %file object after %action action has the correct color placement at corner %corner.',
+              $this->assertTrue($correct_colors, new FormattableMarkup('Image %file object after %action action has the correct color placement at corner %corner.',
                 ['%file' => $file, '%action' => $op, '%corner' => $key]));
             }
           }
@@ -381,30 +397,30 @@ class ToolkitGdTest extends KernelTestBase {
     }
 
     // Test creation of image from scratch, and saving to storage.
-    foreach ([IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_JPEG] as $type) {
+    foreach ([IMAGETYPE_PNG, IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_WEBP] as $type) {
       $image = $this->imageFactory->get();
       $image->createNew(50, 20, image_type_to_extension($type, FALSE), '#ffff00');
       $file = 'from_null' . image_type_to_extension($type);
       $file_path = $directory . '/' . $file;
-      $this->assertEqual(50, $image->getWidth(), SafeMarkup::format('Image file %file has the correct width.', ['%file' => $file]));
-      $this->assertEqual(20, $image->getHeight(), SafeMarkup::format('Image file %file has the correct height.', ['%file' => $file]));
-      $this->assertEqual(image_type_to_mime_type($type), $image->getMimeType(), SafeMarkup::format('Image file %file has the correct MIME type.', ['%file' => $file]));
-      $this->assertTrue($image->save($file_path), SafeMarkup::format('Image %file created anew from a null image was saved.', ['%file' => $file]));
+      $this->assertEquals(50, $image->getWidth(), new FormattableMarkup('Image file %file has the correct width.', ['%file' => $file]));
+      $this->assertEquals(20, $image->getHeight(), new FormattableMarkup('Image file %file has the correct height.', ['%file' => $file]));
+      $this->assertEquals(image_type_to_mime_type($type), $image->getMimeType(), new FormattableMarkup('Image file %file has the correct MIME type.', ['%file' => $file]));
+      $this->assertTrue($image->save($file_path), new FormattableMarkup('Image %file created anew from a null image was saved.', ['%file' => $file]));
 
       // Reload saved image.
       $image_reloaded = $this->imageFactory->get($file_path);
       if (!$image_reloaded->isValid()) {
-        $this->fail(SafeMarkup::format('Could not load image %file.', ['%file' => $file]));
+        $this->fail(new FormattableMarkup('Could not load image %file.', ['%file' => $file]));
         continue;
       }
-      $this->assertEqual(50, $image_reloaded->getWidth(), SafeMarkup::format('Image file %file has the correct width.', ['%file' => $file]));
-      $this->assertEqual(20, $image_reloaded->getHeight(), SafeMarkup::format('Image file %file has the correct height.', ['%file' => $file]));
-      $this->assertEqual(image_type_to_mime_type($type), $image_reloaded->getMimeType(), SafeMarkup::format('Image file %file has the correct MIME type.', ['%file' => $file]));
+      $this->assertEquals(50, $image_reloaded->getWidth(), new FormattableMarkup('Image file %file has the correct width.', ['%file' => $file]));
+      $this->assertEquals(20, $image_reloaded->getHeight(), new FormattableMarkup('Image file %file has the correct height.', ['%file' => $file]));
+      $this->assertEquals(image_type_to_mime_type($type), $image_reloaded->getMimeType(), new FormattableMarkup('Image file %file has the correct MIME type.', ['%file' => $file]));
       if ($image_reloaded->getToolkit()->getType() == IMAGETYPE_GIF) {
-        $this->assertEqual('#ffff00', $image_reloaded->getToolkit()->getTransparentColor(), SafeMarkup::format('Image file %file has the correct transparent color channel set.', ['%file' => $file]));
+        $this->assertEquals('#ffff00', $image_reloaded->getToolkit()->getTransparentColor(), new FormattableMarkup('Image file %file has the correct transparent color channel set.', ['%file' => $file]));
       }
       else {
-        $this->assertEqual(NULL, $image_reloaded->getToolkit()->getTransparentColor(), SafeMarkup::format('Image file %file has no color channel set.', ['%file' => $file]));
+        $this->assertNull($image_reloaded->getToolkit()->getTransparentColor(), new FormattableMarkup('Image file %file has no color channel set.', ['%file' => $file]));
       }
     }
 
@@ -422,26 +438,35 @@ class ToolkitGdTest extends KernelTestBase {
 
   /**
    * Tests that GD resources are freed from memory.
+   *
+   * @todo Remove the method for PHP 8.0+ https://www.drupal.org/node/3179058
    */
   public function testResourceDestruction() {
+    if (PHP_VERSION_ID >= 80000) {
+      $this->markTestSkipped('In PHP8 resources are no longer used. \GdImage objects are used instead. These will be garbage collected like the regular objects they are.');
+    }
     // Test that an Image object going out of scope releases its GD resource.
-    $image = $this->imageFactory->get(drupal_get_path('module', 'simpletest') . '/files/image-test.png');
+    $image = $this->imageFactory->get('core/tests/fixtures/files/image-test.png');
     $res = $image->getToolkit()->getResource();
-    $this->assertTrue(is_resource($res), 'Successfully loaded image resource.');
+    $this->assertIsResource($res);
     $image = NULL;
+    // @todo In https://www.drupal.org/node/3133236 convert this to
+    //   $this->assertIsNotResource($res).
     $this->assertFalse(is_resource($res), 'Image resource was destroyed after losing scope.');
 
     // Test that 'create_new' operation does not leave orphaned GD resources.
-    $image = $this->imageFactory->get(drupal_get_path('module', 'simpletest') . '/files/image-test.png');
+    $image = $this->imageFactory->get('core/tests/fixtures/files/image-test.png');
     $old_res = $image->getToolkit()->getResource();
     // Check if resource has been created successfully.
-    $this->assertTrue(is_resource($old_res));
+    $this->assertIsResource($old_res);
     $image->createNew(20, 20);
     $new_res = $image->getToolkit()->getResource();
     // Check if the original resource has been destroyed.
+    // @todo In https://www.drupal.org/node/3133236 convert this to
+    //   $this->assertIsNotResource($old_res).
     $this->assertFalse(is_resource($old_res));
     // Check if a new resource has been created successfully.
-    $this->assertTrue(is_resource($new_res));
+    $this->assertIsResource($new_res);
   }
 
   /**
@@ -450,16 +475,16 @@ class ToolkitGdTest extends KernelTestBase {
   public function testGifTransparentImages() {
     // Prepare a directory for test file results.
     $directory = Settings::get('file_public_path') . '/imagetest';
-    file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+    \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
 
     // Test loading an indexed GIF image with transparent color set.
     // Color at top-right pixel should be fully transparent.
     $file = 'image-test-transparent-indexed.gif';
-    $image = $this->imageFactory->get(drupal_get_path('module', 'simpletest') . '/files/' . $file);
+    $image = $this->imageFactory->get('core/tests/fixtures/files/' . $file);
     $resource = $image->getToolkit()->getResource();
     $color_index = imagecolorat($resource, $image->getWidth() - 1, 0);
     $color = array_values(imagecolorsforindex($resource, $color_index));
-    $this->assertEqual($this->rotateTransparent, $color, "Image {$file} after load has full transparent color at corner 1.");
+    $this->assertEquals($this->rotateTransparent, $color, "Image {$file} after load has full transparent color at corner 1.");
 
     // Test deliberately creating a GIF image with no transparent color set.
     // Color at top-right pixel should be fully transparent while in memory,
@@ -472,7 +497,7 @@ class ToolkitGdTest extends KernelTestBase {
     $resource = $image->getToolkit()->getResource();
     $color_index = imagecolorat($resource, $image->getWidth() - 1, 0);
     $color = array_values(imagecolorsforindex($resource, $color_index));
-    $this->assertEqual($this->rotateTransparent, $color, "New GIF image with no transparent color set after creation has full transparent color at corner 1.");
+    $this->assertEquals($this->rotateTransparent, $color, "New GIF image with no transparent color set after creation has full transparent color at corner 1.");
     // Save image.
     $this->assertTrue($image->save($file_path), "New GIF image {$file} was saved.");
     // Reload image.
@@ -482,30 +507,30 @@ class ToolkitGdTest extends KernelTestBase {
     $color = array_values(imagecolorsforindex($resource, $color_index));
     // Check explicitly for alpha == 0 as the rest of the color has been
     // compressed and may have slight difference from full white.
-    $this->assertEqual(0, $color[3], "New GIF image {$file} after reload has no transparent color at corner 1.");
+    $this->assertEquals(0, $color[3], "New GIF image {$file} after reload has no transparent color at corner 1.");
 
     // Test loading an image whose transparent color index is out of range.
     // This image was generated by taking an initial image with a palette size
     // of 6 colors, and setting the transparent color index to 6 (one higher
     // than the largest allowed index), as follows:
     // @code
-    // $image = imagecreatefromgif('core/modules/simpletest/files/image-test.gif');
+    // $image = imagecreatefromgif('core/tests/fixtures/files/image-test.gif');
     // imagecolortransparent($image, 6);
-    // imagegif($image, 'core/modules/simpletest/files/image-test-transparent-out-of-range.gif');
+    // imagegif($image, 'core/tests/fixtures/files/image-test-transparent-out-of-range.gif');
     // @endcode
     // This allows us to test that an image with an out-of-range color index
     // can be loaded correctly.
     $file = 'image-test-transparent-out-of-range.gif';
-    $image = $this->imageFactory->get(drupal_get_path('module', 'simpletest') . '/files/' . $file);
+    $image = $this->imageFactory->get('core/tests/fixtures/files/' . $file);
     $toolkit = $image->getToolkit();
 
     if (!$image->isValid()) {
-      $this->fail(SafeMarkup::format('Could not load image %file.', ['%file' => $file]));
+      $this->fail(new FormattableMarkup('Could not load image %file.', ['%file' => $file]));
     }
     else {
       // All images should be converted to truecolor when loaded.
       $image_truecolor = imageistruecolor($toolkit->getResource());
-      $this->assertTrue($image_truecolor, SafeMarkup::format('Image %file after load is a truecolor image.', ['%file' => $file]));
+      $this->assertTrue($image_truecolor, new FormattableMarkup('Image %file after load is a truecolor image.', ['%file' => $file]));
     }
   }
 
@@ -515,15 +540,15 @@ class ToolkitGdTest extends KernelTestBase {
   public function testMissingOperation() {
 
     // Test that the image factory is set to use the GD toolkit.
-    $this->assertEqual($this->imageFactory->getToolkitId(), 'gd', 'The image factory is set to use the \'gd\' image toolkit.');
+    $this->assertEquals('gd', $this->imageFactory->getToolkitId(), 'The image factory is set to use the \'gd\' image toolkit.');
 
     // An image file that will be tested.
     $file = 'image-test.png';
 
     // Load up a fresh image.
-    $image = $this->imageFactory->get(drupal_get_path('module', 'simpletest') . '/files/' . $file);
+    $image = $this->imageFactory->get('core/tests/fixtures/files/' . $file);
     if (!$image->isValid()) {
-      $this->fail(SafeMarkup::format('Could not load image %file.', ['%file' => $file]));
+      $this->fail(new FormattableMarkup('Could not load image %file.', ['%file' => $file]));
     }
 
     // Try perform a missing toolkit operation.

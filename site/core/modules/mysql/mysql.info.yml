@@ -1,0 +1,10 @@
+name: MySQL
+type: module
+description: 'Database driver for MySQL.'
+package: Core
+# version: VERSION
+
+# Information added by Drupal.org packaging script on 2022-06-21
+version: '9.4.1'
+project: 'drupal'
+datestamp: 1655845587

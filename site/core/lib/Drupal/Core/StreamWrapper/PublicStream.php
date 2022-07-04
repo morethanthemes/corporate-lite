@@ -86,10 +86,10 @@ class PublicStream extends LocalStream {
    *
    * The site path is injectable from the site.path service:
    * @code
-   * $base_path = PublicStream::basePath(\Drupal::service('site.path'));
+   * $base_path = PublicStream::basePath(\Drupal::getContainer()->getParameter('site.path'));
    * @endcode
    *
-   * @param \SplString $site_path
+   * @param string $site_path
    *   (optional) The site.path service parameter, which is typically the path
    *   to sites/ in a Drupal installation. This allows you to inject the site
    *   path using services from the caller. If omitted, this method will use the
@@ -99,12 +99,12 @@ class PublicStream extends LocalStream {
    * @return string
    *   The base path for public:// typically sites/default/files.
    */
-  public static function basePath(\SplString $site_path = NULL) {
+  public static function basePath($site_path = NULL) {
     if ($site_path === NULL) {
       // Find the site path. Kernel service is not always available at this
       // point, but is preferred, when available.
       if (\Drupal::hasService('kernel')) {
-        $site_path = \Drupal::service('site.path');
+        $site_path = \Drupal::getContainer()->getParameter('site.path');
       }
       else {
         // If there is no kernel available yet, we call the static
