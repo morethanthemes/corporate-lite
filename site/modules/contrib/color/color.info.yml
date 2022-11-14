@@ -3,8 +3,10 @@ type: module
 description: 'Allows users to change the color scheme of compatible themes.'
 package: Core
 core_version_requirement: '>=9.4'
+test_dependencies:
+  - bartik:bartik
 
-# Information added by Drupal.org packaging script on 2022-04-19
-version: '1.0.1'
+# Information added by Drupal.org packaging script on 2022-09-15
+version: '1.0.3'
 project: 'color'
-datestamp: 1650407216
+datestamp: 1663234626

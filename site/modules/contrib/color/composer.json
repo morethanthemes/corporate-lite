@@ -5,5 +5,8 @@
     "require": {
         "drupal/core": "^9.4 || ^10"
     },
+    "require-dev": {
+        "drupal/bartik": "^1.0"
+    },
     "license": "GPL-2.0-or-later"
 }

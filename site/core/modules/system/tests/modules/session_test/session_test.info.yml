@@ -4,7 +4,7 @@ description: 'Support module for session data testing.'
 package: Testing
 # version: VERSION
 
-# Information added by Drupal.org packaging script on 2022-06-21
-version: '9.4.1'
+# Information added by Drupal.org packaging script on 2022-10-06
+version: '9.4.8'
 project: 'drupal'
-datestamp: 1655845587
+datestamp: 1665072456

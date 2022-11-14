@@ -91,7 +91,9 @@ ckeditor_stylesheets:
   - css/components/text-content.css
   - css/theme/ckeditor-frame.css
 
-# Information added by Drupal.org packaging script on 2022-06-21
-version: '9.4.1'
+ckeditor5-stylesheets: false
+
+# Information added by Drupal.org packaging script on 2022-10-06
+version: '9.4.8'
 project: 'drupal'
-datestamp: 1655845587
+datestamp: 1665072456
