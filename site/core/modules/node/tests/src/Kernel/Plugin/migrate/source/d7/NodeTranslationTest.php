@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\node\Kernel\Plugin\migrate\source\d7;
 
+// cspell:ignore tnid
+
 /**
  * Tests D7 node translation source plugin.
  *
@@ -14,7 +16,7 @@ class NodeTranslationTest extends NodeTest {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['node', 'user', 'migrate_drupal'];
+  protected static $modules = ['node', 'user', 'migrate_drupal'];
 
   /**
    * {@inheritdoc}
@@ -31,7 +33,7 @@ class NodeTranslationTest extends NodeTest {
         'vid' => 7,
         'type' => 'article',
         'language' => 'fr',
-        'title' => 'fr - node title 5',
+        'title' => 'node title 5 (title_field)',
         'node_uid' => 1,
         'revision_uid' => 1,
         'status' => 1,

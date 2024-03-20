@@ -16,6 +16,21 @@ use Drupal\views\ResultRow;
 class StatisticsLastCommentName extends FieldPluginBase {
 
   /**
+   * The users table.
+   */
+  protected ?string $user_table;
+
+  /**
+   * The user name field.
+   */
+  protected string $user_field;
+
+  /**
+   * The user id.
+   */
+  public string $uid;
+
+  /**
    * {@inheritdoc}
    */
   public function query() {
@@ -32,9 +47,9 @@ class StatisticsLastCommentName extends FieldPluginBase {
         [
           'field' => 'uid',
           'operator' => '!=',
-          'value' => '0'
-        ]
-      ]
+          'value' => '0',
+        ],
+      ],
     ];
     $join = \Drupal::service('plugin.manager.views.join')->createInstance('standard', $definition);
 

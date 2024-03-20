@@ -1,8 +1,8 @@
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal, drupalSettings, once) {
   Drupal.behaviors.mtowlCarouselPromotedPosts = {
     attach: function (context, settings) {
-      $(context).find('.mt-carousel-promoted-posts').once('mtowlCarouselPromotedPostsInit').each(function() {
-        $(this).owlCarousel({
+      once('mtowlCarouselPromotedPostsInit', ".mt-carousel-promoted-posts", context).forEach(function(item) {
+        $(item).owlCarousel({
           items: 2,
           responsive:{
             0:{
@@ -34,4 +34,4 @@
       });
     }
   };
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, drupalSettings, once);

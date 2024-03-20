@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Component\Utility;
 
 use Drupal\Component\Utility\SortArray;
@@ -49,42 +51,42 @@ class SortArrayTest extends TestCase {
     $tests[] = [
       ['weight' => 1],
       ['weight' => 1],
-      0
+      0,
     ];
 
     // Weights set and $a is less (lighter) than $b.
     $tests[] = [
       ['weight' => 1],
       ['weight' => 2],
-      -1
+      -1,
     ];
 
     // Weights set and $a is greater (heavier) than $b.
     $tests[] = [
       ['weight' => 2],
       ['weight' => 1],
-      1
+      1,
     ];
 
     // Weights not set.
     $tests[] = [
       [],
       [],
-      0
+      0,
     ];
 
     // Weights for $b not set.
     $tests[] = [
       ['weight' => 1],
       [],
-      1
+      1,
     ];
 
     // Weights for $a not set.
     $tests[] = [
       [],
       ['weight' => 1],
-      -1
+      -1,
     ];
 
     return $tests;
@@ -125,42 +127,42 @@ class SortArrayTest extends TestCase {
     $tests[] = [
       ['#weight' => 1],
       ['#weight' => 1],
-      0
+      0,
     ];
 
     // Weights set and $a is less (lighter) than $b.
     $tests[] = [
       ['#weight' => 1],
       ['#weight' => 2],
-      -1
+      -1,
     ];
 
     // Weights set and $a is greater (heavier) than $b.
     $tests[] = [
       ['#weight' => 2],
       ['#weight' => 1],
-      1
+      1,
     ];
 
     // Weights not set.
     $tests[] = [
       [],
       [],
-      0
+      0,
     ];
 
     // Weights for $b not set.
     $tests[] = [
       ['#weight' => 1],
       [],
-      1
+      1,
     ];
 
     // Weights for $a not set.
     $tests[] = [
       [],
       ['#weight' => 1],
-      -1
+      -1,
     ];
 
     return $tests;
@@ -201,35 +203,35 @@ class SortArrayTest extends TestCase {
     $tests[] = [
       ['title' => 'test'],
       ['title' => 'test'],
-      0
+      0,
     ];
 
     // Title $a not set.
     $tests[] = [
       [],
       ['title' => 'test'],
-      -4
+      -4,
     ];
 
     // Title $b not set.
     $tests[] = [
       ['title' => 'test'],
       [],
-      4
+      4,
     ];
 
     // Titles set but not equal.
     $tests[] = [
       ['title' => 'test'],
       ['title' => 'testing'],
-      -1
+      -1,
     ];
 
     // Titles set but not equal.
     $tests[] = [
       ['title' => 'testing'],
       ['title' => 'test'],
-      1
+      1,
     ];
 
     return $tests;
@@ -270,35 +272,35 @@ class SortArrayTest extends TestCase {
     $tests[] = [
       ['#title' => 'test'],
       ['#title' => 'test'],
-      0
+      0,
     ];
 
     // Title $a not set.
     $tests[] = [
       [],
       ['#title' => 'test'],
-      -4
+      -4,
     ];
 
     // Title $b not set.
     $tests[] = [
       ['#title' => 'test'],
       [],
-      4
+      4,
     ];
 
     // Titles set but not equal.
     $tests[] = [
       ['#title' => 'test'],
       ['#title' => 'testing'],
-      -1
+      -1,
     ];
 
     // Titles set but not equal.
     $tests[] = [
       ['#title' => 'testing'],
       ['#title' => 'test'],
-      1
+      1,
     ];
 
     return $tests;
@@ -314,10 +316,22 @@ class SortArrayTest extends TestCase {
    *   Expected comparison function return value.
    * @param int $result
    *   Actual comparison function return value.
+   *
+   * @internal
    */
-  protected function assertBothNegativePositiveOrZero($expected, $result) {
-    $this->assertTrue(is_numeric($expected) && is_numeric($result), 'Parameters are numeric.');
-    $this->assertTrue(($expected < 0 && $result < 0) || ($expected > 0 && $result > 0) || ($expected === 0 && $result === 0), 'Numbers are either both negative, both positive or both zero.');
+  protected function assertBothNegativePositiveOrZero(int $expected, int $result): void {
+    $this->assertIsNumeric($expected);
+    $this->assertIsNumeric($result);
+    $message = "Numbers should be both negative, both positive or both zero. Expected: $expected, actual: $result";
+    if ($expected > 0) {
+      $this->assertGreaterThan(0, $result, $message);
+    }
+    elseif ($expected < 0) {
+      $this->assertLessThan(0, $result, $message);
+    }
+    else {
+      $this->assertEquals(0, $result, $message);
+    }
   }
 
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Config\Entity;
 
 use Drupal\Tests\UnitTestCase;
@@ -29,7 +31,7 @@ class ConfigEntityDependencyTest extends UnitTestCase {
       'dependencies' => [
         'module' => [
           'node',
-          'views'
+          'views',
         ],
         'config' => [
           'config_test.dynamic.entity_id:745b0ce0-aece-42dd-a800-ade5b8455e84',

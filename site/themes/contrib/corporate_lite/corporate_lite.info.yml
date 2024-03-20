@@ -1,8 +1,8 @@
 name: Corporate Lite
 type: theme
 base theme: classy
-description: 'The free version of <a target="_blank" href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&amp;utm_medium=theme-settings&amp;utm_campaign=free-themes">Corporate+ Drupal 8 theme</a>'
-core: 8.x
+description: 'The free version of <a target="_blank" href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&amp;utm_medium=theme-settings&amp;utm_campaign=free-themes">Corporate+ Drupal 10 theme</a>'
+core_version_requirement: ^8 || ^9 || ^10
 libraries:
   - corporate_lite/fontawesome
   - corporate_lite/global-styling

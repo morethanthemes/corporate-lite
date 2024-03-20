@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Batch;
 
 use Drupal\Core\Batch\Percentage;
@@ -23,6 +25,7 @@ class PercentagesTest extends UnitTestCase {
     $actual_result = Percentage::format($total, $current);
     $this->assertEquals($actual_result, $expected_result, sprintf('The expected the batch api percentage at the state %s/%s is %s%% and got %s%%.', $current, $total, $expected_result, $actual_result));
   }
+
   /**
    * Provide data for batch unit tests.
    *

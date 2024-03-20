@@ -40,14 +40,14 @@ class EventSubscriber implements EventSubscriberInterface {
       'event_name' => $name,
       'current_config_data' => $config->get(),
       'original_config_data' => $config->getOriginal(),
-      'raw_config_data' => $config->getRawData()
+      'raw_config_data' => $config->getRawData(),
     ]);
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events[ConfigEvents::SAVE][] = ['configEventRecorder'];
     $events[ConfigEvents::DELETE][] = ['configEventRecorder'];
     $events[ConfigEvents::RENAME][] = ['configEventRecorder'];

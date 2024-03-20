@@ -5,6 +5,7 @@ namespace Drupal\KernelTests\Core\Field\Entity;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\Entity\BaseFieldOverride;
 use Drupal\Core\Field\FieldItemList;
+use Drupal\entity_test\Entity\EntityTest;
 use Drupal\KernelTests\KernelTestBase;
 
 /**
@@ -18,12 +19,16 @@ class BaseFieldOverrideTest extends KernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['system'];
+  protected static $modules = [
+    'system',
+    'user',
+    'entity_test',
+  ];
 
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('base_field_override');
   }
@@ -54,12 +59,69 @@ class BaseFieldOverrideTest extends KernelTestBase {
         FALSE,
         FieldItemList::class,
       ],
-      'String (overriden class)' => [
+      'String (overridden class)' => [
         'string',
         static::class,
         static::class,
       ],
     ];
+  }
+
+  /**
+   * Tests the default value callback.
+   */
+  public function testDefaultValueCallback() {
+    $base_field = BaseFieldDefinition::create('entity_reference')
+      ->setName('Test Field')
+      ->setTargetEntityTypeId('entity_test')
+      ->setDefaultValueCallback(static::class . '::defaultValueCallbackPrimitive');
+    $base_field_override = BaseFieldOverride::createFromBaseFieldDefinition($base_field, 'test_bundle');
+    $entity = EntityTest::create([]);
+
+    $this->assertEquals([['target_id' => 99]], $base_field->getDefaultValue($entity));
+    $this->assertEquals([['target_id' => 99]], $base_field_override->getDefaultValue($entity));
+  }
+
+  /**
+   * Tests that some properties are inherited from the BaseFieldDefinition.
+   *
+   * @covers ::isReadOnly
+   * @covers ::isComputed
+   * @covers ::isInternal
+   * @covers ::getUniqueIdentifier
+   */
+  public function testInheritedProperties() {
+    $base_field = BaseFieldDefinition::create('string')
+      ->setName('Test Field')
+      ->setTargetEntityTypeId('entity_test')
+      ->setReadOnly(TRUE)
+      /** Ensure that the internal property is inherited from the base field and not the parent class. @see FieldConfigBase::isInternal */
+      ->setInternal(TRUE)
+      ->setComputed(FALSE);
+
+    // Getters of the properties to check.
+    $methods = [
+      'getUniqueIdentifier',
+      'getClass',
+      'isComputed',
+      'isReadOnly',
+      'isInternal',
+    ];
+
+    $override = BaseFieldOverride::createFromBaseFieldDefinition($base_field, 'test_bundle');
+    foreach ($methods as $method) {
+      $this->assertEquals($base_field->$method(), $override->$method());
+    }
+  }
+
+  /**
+   * A default value callback which returns a primitive value.
+   *
+   * @return int
+   *   A primitive default value.
+   */
+  public static function defaultValueCallbackPrimitive() {
+    return 99;
   }
 
 }

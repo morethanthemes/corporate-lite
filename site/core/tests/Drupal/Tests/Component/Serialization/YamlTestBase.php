@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Component\Serialization;
 
 use PHPUnit\Framework\TestCase;
@@ -37,12 +39,12 @@ abstract class YamlTestBase extends TestCase {
         [10],
         [0 => '123456'],
       ],
-      [NULL]
+      [NULL],
     ];
   }
 
   /**
-   * Some data that should be able to be de-serialized.
+   * Some data that should be able to be deserialized.
    */
   public function providerDecodeTests() {
     $data = [
@@ -81,7 +83,7 @@ jquery.ui.accordion:
   }
 
   /**
-   * Tests different boolean serialization and de-serialization.
+   * Tests different boolean serialization and deserialization.
    */
   public function providerBoolTest() {
     return [

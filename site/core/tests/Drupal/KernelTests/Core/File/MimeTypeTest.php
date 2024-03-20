@@ -14,10 +14,10 @@ class MimeTypeTest extends FileTestBase {
    *
    * @var array
    */
-  public static $modules = ['file_test'];
+  protected static $modules = ['file_test'];
 
   /**
-   * Test mapping of mimetypes from filenames.
+   * Tests mapping of mimetypes from filenames.
    */
   public function testFileMimeTypeDetection() {
     $prefixes = ['public://', 'private://', 'temporary://', 'dummy-remote://'];
@@ -33,9 +33,9 @@ class MimeTypeTest extends FileTestBase {
       'pcf.z' => 'application/octet-stream',
       'jar' => 'application/octet-stream',
       'some.junk' => 'application/octet-stream',
-      'foo.file_test_1' => 'madeup/file_test_1',
-      'foo.file_test_2' => 'madeup/file_test_2',
-      'foo.doc' => 'madeup/doc',
+      'foo.file_test_1' => 'made_up/file_test_1',
+      'foo.file_test_2' => 'made_up/file_test_2',
+      'foo.doc' => 'made_up/doc',
       'test.ogg' => 'audio/ogg',
     ];
 
@@ -44,25 +44,25 @@ class MimeTypeTest extends FileTestBase {
     foreach ($test_case as $input => $expected) {
       // Test stream [URI].
       foreach ($prefixes as $prefix) {
-        $output = $guesser->guess($prefix . $input);
-        $this->assertIdentical($output, $expected, format_string('Mimetype for %input is %output (expected: %expected).', ['%input' => $prefix . $input, '%output' => $output, '%expected' => $expected]));
+        $output = $guesser->guessMimeType($prefix . $input);
+        $this->assertSame($expected, $output);
       }
 
       // Test normal path equivalent
-      $output = $guesser->guess($input);
-      $this->assertIdentical($output, $expected, format_string('Mimetype (using default mappings) for %input is %output (expected: %expected).', ['%input' => $input, '%output' => $output, '%expected' => $expected]));
+      $output = $guesser->guessMimeType($input);
+      $this->assertSame($expected, $output);
     }
 
-    // Now test the extension gusser by passing in a custom mapping.
+    // Now test the extension guesser by passing in a custom mapping.
     $mapping = [
       'mimetypes' => [
         0 => 'application/java-archive',
         1 => 'image/jpeg',
       ],
       'extensions' => [
-         'jar' => 0,
-         'jpg' => 1,
-      ]
+        'jar' => 0,
+        'jpg' => 1,
+      ],
     ];
 
     $test_case = [
@@ -84,8 +84,8 @@ class MimeTypeTest extends FileTestBase {
     $extension_guesser->setMapping($mapping);
 
     foreach ($test_case as $input => $expected) {
-      $output = $extension_guesser->guess($input);
-      $this->assertIdentical($output, $expected, format_string('Mimetype (using passed-in mappings) for %input is %output (expected: %expected).', ['%input' => $input, '%output' => $output, '%expected' => $expected]));
+      $output = $extension_guesser->guessMimeType($input);
+      $this->assertSame($expected, $output);
     }
   }
 

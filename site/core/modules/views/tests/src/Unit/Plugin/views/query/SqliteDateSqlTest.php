@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\views\Unit\Plugin\views\query;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Tests\UnitTestCase;
 use Drupal\views\Plugin\views\query\SqliteDateSql;
+
+// cspell:ignore unixepoch
 
 /**
  * Tests the MySQL-specific date query handler.
@@ -25,7 +29,7 @@ class SqliteDateSqlTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->database = $this->prophesize(Connection::class)->reveal();
   }
@@ -66,7 +70,7 @@ class SqliteDateSqlTest extends UnitTestCase {
       ['foo.field', 'Y-y-M-m', "strftime('%Y-%Y-%m-%m', foo.field, 'unixepoch')"],
       ['bar.field', 'n-F D d l', "strftime('%m-%m %d %d %d', bar.field, 'unixepoch')"],
       ['baz.bar_field', 'j/W/H-h i s A', "strftime('%d/%W/%H-%H %M %S ', baz.bar_field, 'unixepoch')"],
-      ['foo.field', 'W', "CAST(((strftime('%j', date(strftime('%Y-%m-%d', foo.field, 'unixepoch'), '-3 days', 'weekday 4')) - 1) / 7 + 1) AS NUMERIC)"]
+      ['foo.field', 'W', "CAST(((strftime('%j', date(strftime('%Y-%m-%d', foo.field, 'unixepoch'), '-3 days', 'weekday 4')) - 1) / 7 + 1) AS NUMERIC)"],
     ];
   }
 

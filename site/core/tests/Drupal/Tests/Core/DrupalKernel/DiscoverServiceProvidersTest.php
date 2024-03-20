@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\DrupalKernel;
 
 use Composer\Autoload\ClassLoader;
@@ -21,12 +23,14 @@ class DiscoverServiceProvidersTest extends UnitTestCase {
   public function testDiscoverServiceCustom() {
     new Settings([
       'container_yamls' => [
-        __DIR__ . '/fixtures/custom.yml'
+        __DIR__ . '/fixtures/custom.yml',
       ],
     ]);
 
     $kernel = new DrupalKernel('prod', new ClassLoader());
     $kernel->discoverServiceProviders();
+
+    $reflected_yamls = (new \ReflectionObject($kernel))->getProperty('serviceYamls');
 
     $expect = [
       'app' => [
@@ -36,8 +40,7 @@ class DiscoverServiceProvidersTest extends UnitTestCase {
         __DIR__ . '/fixtures/custom.yml',
       ],
     ];
-
-    $this->assertAttributeSame($expect, 'serviceYamls', $kernel);
+    $this->assertSame($expect, $reflected_yamls->getValue($kernel));
   }
 
   /**
@@ -48,13 +51,15 @@ class DiscoverServiceProvidersTest extends UnitTestCase {
     $kernel = new DrupalKernel('prod', new ClassLoader());
     $kernel->discoverServiceProviders();
 
+    $reflected_yamls = (new \ReflectionObject($kernel))->getProperty('serviceYamls');
+
     $expect = [
       'app' => [
         'core' => 'core/core.services.yml',
       ],
       'site' => [],
     ];
-    $this->assertAttributeSame($expect, 'serviceYamls', $kernel);
+    $this->assertSame($expect, $reflected_yamls->getValue($kernel));
   }
 
 }

@@ -20,7 +20,14 @@ class FileItemValidationTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['file', 'image', 'entity_test', 'field', 'user', 'system'];
+  protected static $modules = [
+    'file',
+    'image',
+    'entity_test',
+    'field',
+    'user',
+    'system',
+  ];
 
   /**
    * A user.
@@ -32,13 +39,13 @@ class FileItemValidationTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
+    $this->installEntitySchema('entity_test');
     $this->installEntitySchema('user');
     $this->installEntitySchema('file');
     $this->installSchema('file', 'file_usage');
-    $this->installSchema('system', 'sequences');
 
     $this->user = User::create([
       'name' => 'username',
@@ -78,9 +85,9 @@ class FileItemValidationTest extends KernelTestBase {
         'default' => [
           'files' => [
             'test.txt' => str_repeat('a', 3000),
-          ]
-        ]
-      ]
+          ],
+        ],
+      ],
     ]);
 
     // Test for max filesize.
@@ -95,7 +102,7 @@ class FileItemValidationTest extends KernelTestBase {
       'uid' => $this->user->id(),
       'field_test_file' => [
         'target_id' => $file->id(),
-      ]
+      ],
     ]);
     $result = $entity_test->validate();
     $this->assertCount(2, $result);

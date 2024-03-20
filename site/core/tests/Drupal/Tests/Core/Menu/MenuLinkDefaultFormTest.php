@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Core\Menu;
 
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -46,7 +48,7 @@ class MenuLinkDefaultFormTest extends UnitTestCase {
       'weight' => 5,
       'expanded' => 1,
       'parent' => 'bar',
-      'menu_name' => 'foo'
+      'menu_name' => 'foo',
     ], $result);
   }
 

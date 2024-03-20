@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Component\Utility;
 
 use Drupal\Component\Utility\NestedArray;
@@ -28,12 +30,12 @@ class NestedArrayTest extends TestCase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     // Create a form structure with a nested element.
     $this->form['details']['element'] = [
-     '#value' => 'Nested element',
+      '#value' => 'Nested element',
     ];
 
     // Set up parent array.
@@ -265,7 +267,7 @@ class NestedArrayTest extends TestCase {
   public function providerTestFilter() {
     $data = [];
     $data['1d-array'] = [
-      [0, 1, '', TRUE], NULL, [1 => 1, 3 => TRUE]
+      [0, 1, '', TRUE], NULL, [1 => 1, 3 => TRUE],
     ];
     $data['1d-array-callable'] = [
       [0, 1, '', TRUE],

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\Component\FileSystem;
 
 use Drupal\Component\FileSystem\RegexDirectoryIterator;
@@ -91,7 +93,7 @@ class RegexDirectoryIteratorTest extends TestCase {
         [
           '1.yml',
           '2.yml',
-          '3.txt'
+          '3.txt',
         ],
       ],
       [
