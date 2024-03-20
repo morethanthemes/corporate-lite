@@ -1,6 +1,6 @@
 {
   "name": "drupal/corporate_lite",
-  "description": "A free mobile-first Drupal 8 theme and the core of our Premium Corporate+ modern mega-theme.",
+  "description": "A free mobile-first Drupal 10 theme and the core of our Premium Corporate+ modern mega-theme.",
   "type": "drupal-theme",
   "license": "GPL-2.0-or-later",
   "homepage": "https://www.drupal.org/project/corporate_lite",
@@ -31,6 +31,6 @@
     "source": "https://git.drupalcode.org/project/corporate_lite"
   },
   "require": {
-    "drupal/core": "^8 || ^9"
+    "drupal/core": "^8 || ^9 || ^10"
   }
 }

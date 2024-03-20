@@ -151,7 +151,7 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
    '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
    <div class="theme-settings-image-wrapper">
    <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-02-region.jpg" />
+   <img src="' . base_path() . \Drupal::service('extension.path.resolver')->getPath('theme', 'corporate_lite') . '/images/premium-02-region.jpg" />
    </a></div> ',
   );
 
@@ -169,7 +169,7 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
    '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
    <div class="theme-settings-image-wrapper">
    <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-03-article.jpg" />
+   <img src="' . base_path() . \Drupal::service('extension.path.resolver')->getPath('theme', 'corporate_lite') . '/images/premium-03-article.jpg" />
    </a></div> ',
   );
 
@@ -187,7 +187,7 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
    '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
    <div class="theme-settings-image-wrapper">
    <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-04-layout.jpg" />
+   <img src="' . base_path() . \Drupal::service('extension.path.resolver')->getPath('theme', 'corporate_lite') . '/images/premium-04-layout.jpg" />
    </a></div> ',
   );
 
@@ -205,7 +205,7 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
    '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
    <div class="theme-settings-image-wrapper">
    <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-05-fonts.jpg" />
+   <img src="' . base_path() . \Drupal::service('extension.path.resolver')->getPath('theme', 'corporate_lite') . '/images/premium-05-fonts.jpg" />
    </a></div> ',
   );
 
@@ -223,7 +223,7 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
    '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
    <div class="theme-settings-image-wrapper">
    <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-06-slideshow.jpg" />
+   <img src="' . base_path() . \Drupal::service('extension.path.resolver')->getPath('theme', 'corporate_lite') . '/images/premium-06-slideshow.jpg" />
    </a></div> ',
   );
 
@@ -241,7 +241,7 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
    '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
    <div class="theme-settings-image-wrapper">
    <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-07-navigation.jpg" />
+   <img src="' . base_path() . \Drupal::service('extension.path.resolver')->getPath('theme', 'corporate_lite') . '/images/premium-07-navigation.jpg" />
    </a></div> ',
   );
 
@@ -259,7 +259,7 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
    '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
    <div class="theme-settings-image-wrapper">
    <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-08-isotope.jpg" />
+   <img src="' . base_path() . \Drupal::service('extension.path.resolver')->getPath('theme', 'corporate_lite') . '/images/premium-08-isotope.jpg" />
    </a></div> ',
   );
 
@@ -277,7 +277,7 @@ function corporate_lite_form_system_theme_settings_alter(&$form, &$form_state) {
    '<div class="theme-settings-title">'.t("Available in the Premium version of this theme").'</div>
    <div class="theme-settings-image-wrapper">
    <a href="https://morethanthemes.com/themes/corporateplus?utm_source=corporate-lite-demo&utm_medium=theme-settings&utm_campaign=free-themes" target="_blank">
-   <img src="' . base_path() . drupal_get_path('theme', 'corporate_lite') . '/images/premium-09-googlemaps.jpg" />
+   <img src="' . base_path() . \Drupal::service('extension.path.resolver')->getPath('theme', 'corporate_lite') . '/images/premium-09-googlemaps.jpg" />
    </a></div> ',
   );
 

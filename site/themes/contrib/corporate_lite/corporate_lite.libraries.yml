@@ -97,7 +97,7 @@ fixed-header:
     - corporate_lite/waypoints
     - corporate_lite/waypoints-sticky
     - core/drupal
-    - core/jquery.once
+    - core/once
 
 transparent-header:
   version: VERSION
@@ -178,7 +178,7 @@ waypoints-animations-init:
   dependencies:
     - corporate_lite/waypoints
     - core/drupal
-    - core/jquery.once
+    - core/once
 
 magnific-popup:
   version: 1.1.0
@@ -190,7 +190,7 @@ magnific-popup:
   dependencies:
     - core/jquery
     - core/drupal
-    - core/jquery.once
+    - core/once
 
 magnific-popup-field-image-init:
   version: VERSION
@@ -228,7 +228,7 @@ flexslider-in-page-init:
     - corporate_lite/flexslider-global
     - core/drupalSettings
     - core/drupal
-    - core/jquery.once
+    - core/once
 
 in-page-navigation:
   version: VERSION
@@ -242,7 +242,7 @@ in-page-navigation:
     - core/jquery
     - core/drupalSettings
     - core/drupal
-    - core/jquery.once
+    - core/once
 
 owl-carousel:
   version: 2.2.1
@@ -263,7 +263,7 @@ owl-carousel-global:
   dependencies:
     - corporate_lite/owl-carousel
     - core/drupal
-    - core/jquery.once
+    - core/once
 
 owl-carousel-promoted-posts-init:
   version: VERSION
@@ -286,7 +286,7 @@ tooltip:
   dependencies:
     - core/jquery
     - core/drupal
-    - core/jquery.once
+    - core/once
 
 node:
   version: VERSION
