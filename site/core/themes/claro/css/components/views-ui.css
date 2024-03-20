@@ -105,15 +105,17 @@ details.fieldset-no-legend {
   line-height: 1.3125rem;
 }
 
-.views-ui-dialog .form-element--type-select {
-  padding-right: calc(2rem + 2px);
-  background-position: 100% 56%;
+[dir="ltr"] .views-ui-dialog .form-element--type-select {
+  padding-right: calc(2rem - 1px);
 }
 
-/**
- * Elements must communicate width to table rendering.
- * @todo revisit in https://drupal.org/node/3135457
- */
+[dir="rtl"] .views-ui-dialog .form-element--type-select {
+  padding-left: calc(2rem - 1px);
+}
+
+.views-ui-dialog .form-element--type-select {
+  background-position-y: 56%;
+}
 
 .views-ui-dialog td .form-element {
   width: auto;

@@ -117,7 +117,7 @@ function libraries_get_libraries() {
   // profile, installation profiles may want to place libraries into a
   // 'libraries' directory.
   if ($profile = \Drupal::installProfile()) {
-    $profile_path = drupal_get_path('profile', $profile);
+    $profile_path = \Drupal::service('extension.list.profile')->getPath($profile);
     $searchdir[] = "$profile_path/libraries";
   };
 
@@ -168,7 +168,7 @@ function libraries_get_libraries() {
  * https://www.drupal.org/node/2170763
  */
 function libraries_scan_info_files() {
-  $profile = drupal_get_path('profile', \Drupal::installProfile());
+  $profile = \Drupal::service('extension.list.profile')->getPath(\Drupal::installProfile());
   $config = DrupalKernel::findSitePath(\Drupal::request());
 
   // Build a list of directories.
@@ -808,7 +808,7 @@ function libraries_load_files($library) {
       libraries_load_files([
         'files' => $files,
         'path' => '',
-        'library path' => drupal_get_path('module', $module),
+        'library path' => \Drupal::service('extension.list.module')->getPath($module),
       ]);
     }
   }

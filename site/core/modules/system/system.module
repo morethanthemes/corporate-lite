@@ -28,6 +28,7 @@ use Drupal\Core\Queue\QueueGarbageCollectionInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Routing\StackedRouteMatchInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\StreamWrapper\LocalStream;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\Url;
 use GuzzleHttp\Exception\TransferException;
@@ -88,7 +89,7 @@ function system_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<dt>' . t('Configuring for performance') . '</dt>';
       $output .= '<dd>' . t('On the <a href=":performance-page">Performance page</a>, the site can be configured to aggregate CSS and JavaScript files, making the total request size smaller. Note that, for small- to medium-sized websites, the <a href=":page-cache">Internal Page Cache module</a> should be installed so that pages are efficiently cached and reused for anonymous users. Finally, for websites of all sizes, the <a href=":dynamic-page-cache">Dynamic Page Cache module</a> should also be installed so that the non-personalized parts of pages are efficiently cached (for all users).', [':performance-page' => Url::fromRoute('system.performance_settings')->toString(), ':page-cache' => (\Drupal::moduleHandler()->moduleExists('page_cache')) ? Url::fromRoute('help.page', ['name' => 'page_cache'])->toString() : '#', ':dynamic-page-cache' => (\Drupal::moduleHandler()->moduleExists('dynamic_page_cache')) ? Url::fromRoute('help.page', ['name' => 'dynamic_page_cache'])->toString() : '#']) . '</dd>';
       $output .= '<dt>' . t('Configuring cron') . '</dt>';
-      $output .= '<dd>' . t('In order for the site and its modules to continue to operate well, a set of routine administrative operations must run on a regular basis; these operations are known as <em>cron</em> tasks. On the <a href=":cron">Cron page</a>, you can configure cron to run periodically as part of server responses by installing the <em>Automated Cron</em> module, or you can turn this off and trigger cron from an outside process on your web server. You can verify the status of cron tasks by visiting the <a href=":status">Status report page</a>. For more information, see the <a href=":handbook">online documentation for configuring cron jobs</a>.', [':status' => Url::fromRoute('system.status')->toString(), ':handbook' => 'https://www.drupal.org/cron', ':cron' => Url::fromRoute('system.cron_settings')->toString()]) . '</dd>';
+      $output .= '<dd>' . t('In order for the site and its modules to continue to operate well, a set of routine administrative operations must run on a regular basis; these operations are known as <em>cron</em> tasks. On the <a href=":cron">Cron page</a>, you can configure cron to run periodically as part of server responses by installing the <em>Automated Cron</em> module, or you can turn this off and trigger cron from an outside process on your web server. You can verify the status of cron tasks by visiting the <a href=":status">Status report page</a>. For more information, see the <a href=":handbook">online documentation for configuring cron jobs</a>.', [':status' => Url::fromRoute('system.status')->toString(), ':handbook' => 'https://www.drupal.org/docs/administering-a-drupal-site/cron-automated-tasks/cron-automated-tasks-overview', ':cron' => Url::fromRoute('system.cron_settings')->toString()]) . '</dd>';
       $output .= '<dt>' . t('Configuring the file system') . '</dt>';
       $output .= '<dd>' . t('Your site has several file directories, which are used to store and process uploaded and generated files. The <em>public</em> file directory, which is configured in your settings.php file, is the default place for storing uploaded files. Links to files in this directory contain the direct file URL, so when the files are requested, the web server will send them directly without invoking your site code. This means that the files can be downloaded by anyone with the file URL, so requests are not access-controlled but they are efficient. The <em>private</em> file directory, also configured in your settings.php file and ideally located outside the site web root, is access controlled. Links to files in this directory are not direct, so requests to these files are mediated by your site code. This means that your site can check file access permission for each file before deciding to fulfill the request, so the requests are more secure, but less efficient. You should only use the private storage for files that need access control, not for files like your site logo and background images used on every page. The <em>temporary</em> file directory is used internally by your site code for various operations, and is configured on the <a href=":file-system">File system settings</a> page. You can also see the configured public and private file directories on this page, and choose whether public or private should be the default for uploaded files.', [':file-system' => Url::fromRoute('system.file_system_settings')->toString()]) . '</dd>';
       $output .= '<dt>' . t('Configuring the image toolkit') . '</dt>';
@@ -458,9 +459,6 @@ function template_preprocess_entity_add_list(&$variables) {
  *   object created by authorize.php when the user authorizes the operation.
  * @param $page_title
  *   Optional string to use as the page title once redirected to authorize.php.
- *
- * @return
- *   Nothing, this function just initializes variables in the user's session.
  */
 function system_authorized_init($callback, $file, $arguments = [], $page_title = NULL) {
   $session = \Drupal::request()->getSession();
@@ -877,7 +875,7 @@ function system_check_directory($form_element, FormStateInterface $form_state) {
  *   Possible values: REGIONS_ALL or REGIONS_VISIBLE. Visible excludes hidden
  *   regions.
  *
- * @return
+ * @return string[]
  *   An array of regions in the form $region['name'] = 'description'.
  */
 function system_region_list($theme, $show = REGIONS_ALL) {
@@ -949,7 +947,7 @@ function system_system_info_alter(&$info, Extension $file, $type) {
  * @param $theme
  *   The name of a theme.
  *
- * @return
+ * @return string
  *   A string that is the region name.
  */
 function system_default_region($theme) {
@@ -1392,6 +1390,26 @@ function system_page_top() {
  * Implements hook_file_download().
  */
 function system_file_download($uri) {
+  $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+  $scheme = $stream_wrapper_manager->getScheme($uri);
+  if ($stream_wrapper_manager->isValidScheme($scheme)) {
+    $target = $stream_wrapper_manager->getTarget($uri);
+    if ($target !== FALSE) {
+      if (!in_array($scheme, Settings::get('file_sa_core_2023_005_schemes', []))) {
+        if (DIRECTORY_SEPARATOR !== '/') {
+          $class = $stream_wrapper_manager->getClass($scheme);
+          if (is_subclass_of($class, LocalStream::class)) {
+            $target = str_replace(DIRECTORY_SEPARATOR, '/', $target);
+          }
+        }
+        $parts = explode('/', $target);
+        if (array_intersect($parts, ['.', '..'])) {
+          return -1;
+        }
+      }
+    }
+  }
+
   $core_schemes = ['public', 'private', 'temporary'];
   $additional_public_schemes = array_diff(Settings::get('file_additional_public_schemes', []), $core_schemes);
   if ($additional_public_schemes) {

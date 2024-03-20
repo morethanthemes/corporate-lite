@@ -4,6 +4,7 @@ namespace Drupal\views\Controller;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Ajax\PrependCommand;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -136,17 +137,17 @@ class ViewAjaxController implements ContainerInjectionInterface {
       // @todo Remove this parsing once these are removed from the request in
       //   https://www.drupal.org/node/2504709.
       foreach ([
-          'view_name',
-          'view_display_id',
-          'view_args',
-          'view_path',
-          'view_dom_id',
-          'pager_element',
-          'view_base_path',
-          AjaxResponseSubscriber::AJAX_REQUEST_PARAMETER,
-          FormBuilderInterface::AJAX_FORM_REQUEST,
-          MainContentViewSubscriber::WRAPPER_FORMAT,
-        ] as $key) {
+        'view_name',
+        'view_display_id',
+        'view_args',
+        'view_path',
+        'view_dom_id',
+        'pager_element',
+        'view_base_path',
+        AjaxResponseSubscriber::AJAX_REQUEST_PARAMETER,
+        FormBuilderInterface::AJAX_FORM_REQUEST,
+        MainContentViewSubscriber::WRAPPER_FORMAT,
+      ] as $key) {
         $request->query->remove($key);
         $request->request->remove($key);
       }
@@ -200,6 +201,7 @@ class ViewAjaxController implements ContainerInjectionInterface {
             ->applyTo($preview);
         }
         $response->addCommand(new ReplaceCommand(".js-view-dom-id-$dom_id", $preview));
+        $response->addCommand(new PrependCommand(".js-view-dom-id-$dom_id", ['#type' => 'status_messages']));
 
         return $response;
       }

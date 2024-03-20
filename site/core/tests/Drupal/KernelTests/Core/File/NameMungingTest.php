@@ -50,6 +50,9 @@ class NameMungingTest extends FileTestBase {
    */
   protected $nameWithUcExt;
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
     $this->badExtension = 'foo';
@@ -81,8 +84,7 @@ class NameMungingTest extends FileTestBase {
   }
 
   /**
-   * If the system.file.allow_insecure_uploads setting evaluates to true, the file should
-   * come out untouched, no matter how evil the filename.
+   * Test munging with system.file.allow_insecure_uploads set to true.
    */
   public function testMungeIgnoreInsecure() {
     $this->config('system.file')->set('allow_insecure_uploads', 1)->save();

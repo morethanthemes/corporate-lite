@@ -40,7 +40,7 @@ function flexslider_example_uninstall() {
   }
 
   // Now delete all of the configuration installed by this module.
-  $dir = drupal_get_path('module', 'flexslider_example') . '/config/install';
+  $dir = \Drupal::service('extension.list.module')->getPath('flexslider_example') . '/config/install';
   $files = \Drupal::service('file_system')->scanDirectory($dir, '/.*/');
   foreach ($files as $file) {
     \Drupal::configFactory()->getEditable($file->name)->delete();
@@ -54,7 +54,7 @@ function flexslider_example_uninstall() {
  */
 function flexslider_example_generate_content() {
 
-  $dir = drupal_get_path('module', 'flexslider') . '/assets/images';
+  $dir = \Drupal::service('extension.list.module')->getPath('flexslider') . '/assets/images';
   $images = \Drupal::service('file_system')->scanDirectory($dir, '/flexslider-sample/');
 
   foreach ($images as $image) {
@@ -62,7 +62,7 @@ function flexslider_example_generate_content() {
     $filename = $image->filename;
 
     $file_temp = file_get_contents($image->uri);
-    $file_temp = file_save_data($file_temp, 'public://' . $filename, FileSystemInterface::EXISTS_RENAME);
+    $file_temp = \Drupal::service('file.repository')->writeData($file_temp, 'public://' . $filename, FileSystemInterface::EXISTS_RENAME);
 
     // Create node object with attached file.
     $node = Node::create([

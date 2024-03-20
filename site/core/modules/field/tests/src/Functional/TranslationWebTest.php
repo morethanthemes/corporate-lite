@@ -54,6 +54,9 @@ class TranslationWebTest extends FieldTestBase {
    */
   protected $field;
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -129,6 +132,8 @@ class TranslationWebTest extends FieldTestBase {
   }
 
   /**
+   * Tests translation revisions.
+   *
    * Check if the field translation attached to the entity revision identified
    * by the passed arguments were correctly stored.
    */

@@ -147,7 +147,7 @@ class AssetResolver implements AssetResolverInterface {
 
           // Always add a tiny value to the weight, to conserve the insertion
           // order.
-          $options['weight'] += count($css) / 1000;
+          $options['weight'] += count($css) / 30000;
 
           // CSS files are being keyed by the full path.
           $css[$options['data']] = $options;
@@ -264,7 +264,7 @@ class AssetResolver implements AssetResolverInterface {
 
             // Always add a tiny value to the weight, to conserve the insertion
             // order.
-            $options['weight'] += count($javascript) / 1000;
+            $options['weight'] += count($javascript) / 30000;
 
             // Local and external files must keep their name as the associative
             // key so the same JavaScript file is not added twice.
@@ -356,19 +356,22 @@ class AssetResolver implements AssetResolverInterface {
   /**
    * Sorts CSS and JavaScript resources.
    *
+   * Callback for uasort().
+   *
    * This sort order helps optimize front-end performance while providing
    * modules and themes with the necessary control for ordering the CSS and
    * JavaScript appearing on a page.
    *
-   * @param $a
+   * @param array $a
    *   First item for comparison. The compared items should be associative
    *   arrays of member items.
-   * @param $b
+   * @param array $b
    *   Second item for comparison.
    *
    * @return int
+   *   The comparison result for uasort().
    */
-  public static function sort($a, $b) {
+  public static function sort(array $a, array $b) {
     // First order by group, so that all items in the CSS_AGGREGATE_DEFAULT
     // group appear before items in the CSS_AGGREGATE_THEME group. Modules may
     // create additional groups by defining their own constants.

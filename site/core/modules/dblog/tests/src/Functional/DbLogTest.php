@@ -14,8 +14,7 @@ use Drupal\Tests\BrowserTestBase;
 use Drupal\Tests\system\Functional\Menu\AssertBreadcrumbTrait;
 
 /**
- * Generate events and verify dblog entries; verify user access to log reports
- * based on permissions.
+ * Verifies log entries and user access based on permissions.
  *
  * @group dblog
  */
@@ -408,8 +407,7 @@ class DbLogTest extends BrowserTestBase {
   }
 
   /**
-   * Tests the escaping of links in the operation row of a database log detail
-   * page.
+   * Tests link escaping in the operation row of a database log detail page.
    */
   private function verifyLinkEscaping() {
     $link = Link::fromTextAndUrl('View', Url::fromRoute('entity.node.canonical', ['node' => 1]))->toString();
@@ -724,12 +722,14 @@ class DbLogTest extends BrowserTestBase {
     $this->drupalGet('admin/reports/dblog', ['query' => ['order' => 'Type']]);
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('Operations');
+    $this->assertSession()->fieldExists('edit-type');
 
     // Clear all logs and make sure the confirmation message is found.
     $this->clearLogsEntries();
     // Confirm that the logs should be cleared.
     $this->submitForm([], 'Confirm');
     $this->assertSession()->pageTextContains('Database log cleared.');
+    $this->assertSession()->fieldNotExists('edit-type');
   }
 
   /**

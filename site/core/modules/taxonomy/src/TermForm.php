@@ -23,7 +23,7 @@ class TermForm extends ContentEntityForm {
     $taxonomy_storage = $this->entityTypeManager->getStorage('taxonomy_term');
     $vocabulary = $vocab_storage->load($term->bundle());
 
-    $parent = array_keys($taxonomy_storage->loadParents($term->id()));
+    $parent = $this->getParentIds($term);
     $form_state->set(['taxonomy', 'parent'], $parent);
     $form_state->set(['taxonomy', 'vocabulary'], $vocabulary);
 
@@ -42,7 +42,6 @@ class TermForm extends ContentEntityForm {
     if (!$this->config('taxonomy.settings')->get('override_selector')) {
       $exclude = [];
       if (!$term->isNew()) {
-        $parent = array_keys($taxonomy_storage->loadParents($term->id()));
         $children = $taxonomy_storage->loadTree($vocabulary->id(), $term->id());
 
         // A term can't be the child of itself, nor of its children.
@@ -110,6 +109,7 @@ class TermForm extends ContentEntityForm {
         '#value' => $this->t('Save and go to list'),
         '#weight' => 20,
         '#submit' => array_merge($element['submit']['#submit'], ['::overview']),
+        '#access' => $this->currentUser()->hasPermission('access taxonomy overview'),
       ];
     }
 
@@ -201,6 +201,7 @@ class TermForm extends ContentEntityForm {
       case SAVED_UPDATED:
         $this->messenger()->addStatus($this->t('Updated term %term.', ['%term' => $view_link]));
         $this->logger('taxonomy')->notice('Updated term %term.', ['%term' => $term->getName(), 'link' => $edit_link]);
+        $form_state->setRedirect('entity.taxonomy_term.canonical', ['taxonomy_term' => $term->id()]);
         break;
     }
 
@@ -212,6 +213,25 @@ class TermForm extends ContentEntityForm {
 
     $form_state->setValue('tid', $term->id());
     $form_state->set('tid', $term->id());
+  }
+
+  /**
+   * Returns term parent IDs, including the root.
+   *
+   * @param \Drupal\taxonomy\TermInterface $term
+   *   The taxonomy term entity.
+   *
+   * @return array
+   *   A list if parent term IDs.
+   */
+  protected function getParentIds(TermInterface $term): array {
+    $parent = [];
+    // Get the parent directly from the term as
+    // \Drupal\taxonomy\TermStorageInterface::loadParents() excludes the root.
+    foreach ($term->get('parent') as $item) {
+      $parent[] = (int) $item->target_id;
+    }
+    return $parent;
   }
 
 }

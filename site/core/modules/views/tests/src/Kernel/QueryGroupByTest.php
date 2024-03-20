@@ -21,7 +21,14 @@ class QueryGroupByTest extends ViewsKernelTestBase {
    *
    * @var array
    */
-  public static $testViews = ['test_group_by_in_filters', 'test_aggregate_count', 'test_group_by_count', 'test_group_by_count_multicardinality', 'test_group_by_field_not_within_bundle'];
+  public static $testViews = [
+    'test_group_by_in_filters',
+    'test_aggregate_count',
+    'test_aggregate_count_function',
+    'test_group_by_count',
+    'test_group_by_count_multicardinality',
+    'test_group_by_field_not_within_bundle',
+  ];
 
   /**
    * Modules to enable.
@@ -77,6 +84,19 @@ class QueryGroupByTest extends ViewsKernelTestBase {
 
     $this->assertEquals(4, $types['name1']);
     $this->assertEquals(3, $types['name2']);
+  }
+
+  /**
+   * Tests aggregate count feature with no group by.
+   */
+  public function testAggregateCountFunction() {
+    $this->setupTestEntities();
+
+    $view = Views::getView('test_aggregate_count_function');
+    $this->executeView($view);
+
+    $this->assertEquals(7, $view->result[0]->id);
+    $this->assertCount(1, $view->result, 'Make sure the count of rows is one.');
   }
 
   /**
@@ -210,7 +230,7 @@ class QueryGroupByTest extends ViewsKernelTestBase {
     $view->displayHandlers->get('default')->options['fields']['name']['group_type'] = 'min';
     unset($view->displayHandlers->get('default')->options['fields']['id']['group_type']);
     $this->executeView($view);
-    $this->assertStringContainsString('GROUP BY entity_test.id', (string) $view->build_info['query'], 'GROUP BY field includes the base table name when grouping on the base field.');
+    $this->assertMatchesRegularExpression('/GROUP BY .*[^\w\s]entity_test[^\w\s]\.[^\w\s]id[^\w\s]/', (string) $view->build_info['query'], 'GROUP BY field includes the base table name when grouping on the base field.');
   }
 
   /**

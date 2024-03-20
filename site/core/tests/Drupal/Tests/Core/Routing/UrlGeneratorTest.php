@@ -34,7 +34,7 @@ class UrlGeneratorTest extends UnitTestCase {
   protected $provider;
 
   /**
-   * The url generator to test.
+   * The URL generator to test.
    *
    * @var \Drupal\Core\Routing\UrlGenerator
    */
@@ -175,8 +175,7 @@ class UrlGeneratorTest extends UnitTestCase {
   }
 
   /**
-   * Return value callback for the getAliasByPath() method on the mock alias
-   * manager.
+   * Return value callback for getAliasByPath() on the mock alias manager.
    *
    * Ensures that by default the call to getAliasByPath() will return the first
    * argument that was passed in. We special-case the paths for which we wish it
@@ -452,8 +451,7 @@ class UrlGeneratorTest extends UnitTestCase {
   }
 
   /**
-   * Tests that the 'scheme' route requirement is respected during url
-   * generation.
+   * Tests the 'scheme' route requirement during URL generation.
    */
   public function testUrlGenerationWithHttpsRequirement() {
     $url = $this->generator->generate('test_4', [], TRUE);
@@ -512,18 +510,19 @@ class UrlGeneratorTest extends UnitTestCase {
    * Note: We use absolute covers to let
    * \Drupal\Tests\Core\Render\MetadataBubblingUrlGeneratorTest work.
    */
-  public function testGenerateWithPathProcessorChangingQueryParameter() {
+  public function testGenerateWithPathProcessorChangingOptions() {
     $path_processor = $this->createMock(OutboundPathProcessorInterface::CLASS);
     $path_processor->expects($this->atLeastOnce())
       ->method('processOutbound')
       ->willReturnCallback(function ($path, &$options = [], Request $request = NULL, BubbleableMetadata $bubbleable_metadata = NULL) {
         $options['query'] = ['zoo' => 5];
+        $options['fragment'] = 'foo';
         return $path;
       });
     $this->processorManager->addOutbound($path_processor);
 
     $options = [];
-    $this->assertGenerateFromRoute('test_2', ['narf' => 5], $options, '/goodbye/cruel/world?zoo=5', (new BubbleableMetadata())->setCacheMaxAge(Cache::PERMANENT));
+    $this->assertGenerateFromRoute('test_2', ['narf' => 5], $options, '/goodbye/cruel/world?zoo=5#foo', (new BubbleableMetadata())->setCacheMaxAge(Cache::PERMANENT));
   }
 
   /**

@@ -60,7 +60,7 @@ class TourViewBuilder extends EntityViewBuilder {
           $body = (string) \Drupal::service('renderer')->renderPlain($body_render_array);
           $output = [
             'body' => $body,
-            'title' => Html::escape($tip->getLabel()),
+            'title' => $tip->getLabel(),
           ];
 
           $selector = $tip->getSelector();
@@ -111,8 +111,8 @@ class TourViewBuilder extends EntityViewBuilder {
               '@total' => $total_tips,
             ]),
             'attachTo' => [
-               'element' => $selector,
-               'on' => $location ?? 'bottom-start',
+              'element' => $selector,
+              'on' => $location ?? 'bottom-start',
             ],
             // Shepherd expects classes to be provided as a string.
             'classes' => implode(' ', $classes),

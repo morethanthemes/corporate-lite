@@ -112,9 +112,13 @@ class LibraryManager implements LibraryManagerInterface {
    * @return \Drupal\libraries\ExternalLibrary\Type\LibraryTypeInterface
    */
   protected function getLibraryType($id, $definition) {
-    // @todo Validate that the type is a string.
     if (!isset($definition['type'])) {
       throw new LibraryTypeNotFoundException($id);
+    }
+    if (!is_string($definition['type'])) {
+      throw new \InvalidArgumentException(
+        "Expected 'string' but '" . gettype($definition['type']) . "' given"
+      );
     }
     return $this->libraryTypeFactory->createInstance($definition['type']);
   }

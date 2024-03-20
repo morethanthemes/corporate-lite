@@ -4,6 +4,7 @@ namespace Drupal\views_ui;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Timer;
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\EventSubscriber\AjaxResponseSubscriber;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Stores UI related temporary settings.
  */
+#[\AllowDynamicProperties]
 class ViewUI implements ViewEntityInterface {
 
   /**
@@ -121,8 +123,9 @@ class ViewUI implements ViewEntityInterface {
   ];
 
   /**
-   * Whether the config is being created, updated or deleted through the
-   * import process.
+   * Whether the config is being synced through the import process.
+   *
+   * This is the case with create, update or delete.
    *
    * @var bool
    */
@@ -134,6 +137,11 @@ class ViewUI implements ViewEntityInterface {
    * @var bool
    */
   private $isUninstalling = FALSE;
+
+  /**
+   * The entity type.
+   */
+  protected $entityType;
 
   /**
    * Constructs a View UI object.
@@ -269,9 +277,10 @@ class ViewUI implements ViewEntityInterface {
   }
 
   /**
-   * Provide a standard set of Apply/Cancel/OK buttons for the forms. Also provide
-   * a hidden op operator because the forms plugin doesn't seem to properly
-   * provide which button was clicked.
+   * Provides a standard set of Apply/Cancel/OK buttons for the forms.
+   *
+   * This will also provide a hidden op operator because the forms plugin
+   * doesn't seem to properly provide which button was clicked.
    *
    * TODO: Is the hidden op operator still here somewhere, or is that part of the
    * docblock outdated?
@@ -373,8 +382,9 @@ class ViewUI implements ViewEntityInterface {
   }
 
   /**
-   * Add another form to the stack; clicking 'apply' will go to this form
-   * rather than closing the ajax popup.
+   * Adds another form to the stack.
+   *
+   * Clicking 'apply' will go to this form rather than closing the ajax popup.
    */
   public function addFormToStack($key, $display_id, $type, $id = NULL, $top = FALSE, $rebuild_keys = FALSE) {
     // Reset the cache of IDs. Drupal rather aggressively prevents ID
@@ -536,7 +546,6 @@ class ViewUI implements ViewEntityInterface {
     $errors = $executable->validate();
     $executable->destroy();
     if (empty($errors)) {
-      $this->ajax = TRUE;
       $executable->live_preview = TRUE;
 
       // AJAX happens via HTTP POST but everything expects exposed data to
@@ -673,9 +682,9 @@ class ViewUI implements ViewEntityInterface {
                 [
                   'data' => [
                     '#prefix' => '<pre>',
-                     'queries' => $queries,
-                     '#suffix' => '</pre>',
-                    ],
+                    'queries' => $queries,
+                    '#suffix' => '</pre>',
+                  ],
                 ],
               ];
             }
@@ -691,6 +700,7 @@ class ViewUI implements ViewEntityInterface {
               [
                 'data' => [
                   '#markup' => $executable->getTitle(),
+                  '#allowed_tags' => Xss::getHtmlTagList(),
                 ],
               ],
             ];
@@ -830,7 +840,7 @@ class ViewUI implements ViewEntityInterface {
   /**
    * Get the user's current progress through the form stack.
    *
-   * @return
+   * @return array|bool
    *   FALSE if the user is not currently in a multiple-form stack. Otherwise,
    *   an associative array with the following keys:
    *   - current: The number of the current form on the stack.

@@ -37,7 +37,7 @@ class BrowserTestBaseTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'starterkit_theme';
 
   /**
    * Tests basic page test.
@@ -69,7 +69,7 @@ class BrowserTestBaseTest extends BrowserTestBase {
     $js_settings = $this->getDrupalSettings();
     $this->assertSame('azAZ09();.,\\\/-_{}', $js_settings['test-setting']);
 
-    // Test drupalGet with a url object.
+    // Test drupalGet with a URL object.
     $url = Url::fromRoute('test_page_test.render_title');
     $this->drupalGet($url);
     $this->assertSession()->statusCodeEquals(200);

@@ -35,8 +35,7 @@ class LocaleImportFunctionalTest extends BrowserTestBase {
   protected $adminUser;
 
   /**
-   * A user able to create languages, import translations and access site
-   * reports.
+   * A user able to create languages, import translations, access site reports.
    *
    * @var \Drupal\user\Entity\User
    */
@@ -506,8 +505,7 @@ EOF;
   }
 
   /**
-   * Helper function that returns a .po file which strings will be marked
-   * as customized.
+   * Returns a .po file that will be marked as customized.
    */
   public function getCustomPoFile() {
     return <<< EOF

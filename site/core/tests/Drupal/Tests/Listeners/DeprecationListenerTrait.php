@@ -142,6 +142,10 @@ trait DeprecationListenerTrait {
       // Drupal date library deprecated.
       'The "core/drupal.date" asset library is deprecated in drupal:9.4.0 and is removed from drupal:10.0.0. There is no replacement. See https://www.drupal.org/node/3258267',
       "Drupal\Core\Render\Element\Date::processDate() is deprecated in drupal:9.4.0 and is removed from drupal:10.0.0. There is no replacement. See https://www.drupal.org/node/3258267",
+      'The "core/popperjs" asset library is deprecated in Drupal 9.5.0 and will be removed in Drupal 10.0.0. There is no replacement. See https://www.drupal.org/node/3307518',
+      // The CKEditor 4 asset library is deprecated.
+      'The "core/ckeditor" asset library is deprecated in drupal:9.5.0 and is removed from drupal:10.0.0. There is no replacement. See https://www.drupal.org/node/3304481',
+      'Theme "core" is extending a deprecated library. The "core/ckeditor" asset library is deprecated in drupal:9.5.0 and is removed from drupal:10.0.0. There is no replacement. See https://www.drupal.org/node/3304481',
     ];
   }
 
@@ -158,6 +162,10 @@ trait DeprecationListenerTrait {
     $deprecation_handler = function ($type, $msg, $file, $line, $context = []) {
       // Skip listed deprecations.
       if (($type === E_USER_DEPRECATED || $type === E_DEPRECATED) && static::isDeprecationSkipped($msg)) {
+        return;
+      }
+      // Drupal 9 uses PHP syntax that's deprecated in PHP 8.2.
+      if (PHP_VERSION_ID >= 80200 && $type === E_DEPRECATED) {
         return;
       }
       return call_user_func($this->previousHandler, $type, $msg, $file, $line, $context);

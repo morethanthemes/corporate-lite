@@ -25,7 +25,7 @@ class HtmlToTextTest extends BrowserTestBase {
    * @param $text
    *   The text string to convert.
    *
-   * @return
+   * @return string
    *   An HTML representation of the text string that, when displayed in a
    *   browser, represents the PHP source code equivalent of $text.
    */
@@ -194,7 +194,7 @@ class HtmlToTextTest extends BrowserTestBase {
   /**
    * Tests that whitespace is collapsed.
    */
-  public function testDrupalHtmltoTextCollapsesWhitespace() {
+  public function testDrupalHtmlToTextCollapsesWhitespace() {
     $input = "<p>Drupal  Drupal\n\nDrupal<pre>Drupal  Drupal\n\nDrupal</pre>Drupal  Drupal\n\nDrupal</p>";
     // @todo The whitespace should be collapsed.
     $collapsed = "Drupal  Drupal\n\nDrupalDrupal  Drupal\n\nDrupalDrupal  Drupal\n\nDrupal\n\n";
@@ -207,8 +207,7 @@ class HtmlToTextTest extends BrowserTestBase {
   }
 
   /**
-   * Tests that text separated by block-level tags in HTML get separated by
-   * (at least) a newline in the plaintext version.
+   * Tests the conversion of block-level HTML tags to plaintext with newlines.
    */
   public function testDrupalHtmlToTextBlockTagToNewline() {
     $input = <<<'EOT'
@@ -298,15 +297,14 @@ EOT;
   }
 
   /**
-   * Tests that combinations of paragraph breaks, line breaks, linefeeds,
-   * and spaces are properly handled.
+   * Tests the plaintext conversion of different whitespace combinations.
    */
   public function testDrupalHtmlToTextParagraphs() {
     $tests = [];
     $tests[] = [
-        'html' => "<p>line 1<br />\nline 2<br />line 3\n<br />line 4</p><p>paragraph</p>",
+      'html' => "<p>line 1<br />\nline 2<br />line 3\n<br />line 4</p><p>paragraph</p>",
         // @todo Trailing line breaks should be trimmed.
-        'text' => "line 1\nline 2\nline 3\nline 4\n\nparagraph\n\n",
+      'text' => "line 1\nline 2\nline 3\nline 4\n\nparagraph\n\n",
     ];
     $tests[] = [
       'html' => "<p>line 1<br /> line 2</p> <p>line 4<br /> line 5</p> <p>0</p>",
@@ -352,7 +350,7 @@ EOT;
    * @see \Drupal\Core\Mail\MailFormatHelper::wrapMail()
    */
   public function testRemoveTrailingWhitespace() {
-    $text = "Hi there! \nHerp Derp";
+    $text = "Hi there! \nEarth";
     $mail_lines = explode("\n", MailFormatHelper::wrapMail($text));
     $this->assertNotEquals(" ", substr($mail_lines[0], -1), 'Trailing whitespace removed.');
   }
@@ -366,11 +364,11 @@ EOT;
    * @see \Drupal\Core\Mail\MailFormatHelper::wrapMail()
    */
   public function testUsenetSignature() {
-    $text = "Hi there!\n-- \nHerp Derp";
+    $text = "Hi there!\n-- \nEarth";
     $mail_lines = explode("\n", MailFormatHelper::wrapMail($text));
     $this->assertEquals("-- ", $mail_lines[1], 'Trailing whitespace not removed for dash-dash-space signatures.');
 
-    $text = "Hi there!\n--  \nHerp Derp";
+    $text = "Hi there!\n--  \nEarth";
     $mail_lines = explode("\n", MailFormatHelper::wrapMail($text));
     $this->assertEquals("--", $mail_lines[1], 'Trailing whitespace removed for incorrect dash-dash-space signatures.');
   }

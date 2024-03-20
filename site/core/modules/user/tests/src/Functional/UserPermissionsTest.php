@@ -7,8 +7,7 @@ use Drupal\user\RoleInterface;
 use Drupal\user\Entity\Role;
 
 /**
- * Verify that role permissions can be added and removed via the permissions
- * pages.
+ * Verifies role permissions can be added and removed via the permissions page.
  *
  * @group user
  */
@@ -33,6 +32,9 @@ class UserPermissionsTest extends BrowserTestBase {
    */
   protected $defaultTheme = 'stark';
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
 

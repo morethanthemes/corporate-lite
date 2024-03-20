@@ -15,17 +15,17 @@ function libraries_test_libraries_info() {
   // Test library detection.
   $libraries['example_missing'] = [
     'name' => 'Example missing',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/missing',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/missing',
   ];
   $libraries['example_undetected_version'] = [
     'name' => 'Example undetected version',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests',
     'version callback' => '_libraries_test_return_version',
     'version arguments' => [FALSE],
   ];
   $libraries['example_unsupported_version'] = [
     'name' => 'Example unsupported version',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests',
     'version callback' => '_libraries_test_return_version',
     'version arguments' => ['1'],
     'versions' => [
@@ -35,7 +35,7 @@ function libraries_test_libraries_info() {
 
   $libraries['example_supported_version'] = [
     'name' => 'Example supported version',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests',
     'version callback' => '_libraries_test_return_version',
     'version arguments' => ['1'],
     'versions' => [
@@ -46,7 +46,7 @@ function libraries_test_libraries_info() {
   // Test the default version callback.
   $libraries['example_default_version_callback'] = [
     'name' => 'Example default version callback',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version arguments' => [
       'file' => 'README.txt',
       // Version 1
@@ -58,7 +58,7 @@ function libraries_test_libraries_info() {
   // Test a multiple-parameter version callback.
   $libraries['example_multiple_parameter_version_callback'] = [
     'name' => 'Example multiple parameter version callback',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     // Version 1
     'version callback' => '_libraries_test_get_version',
     'version arguments' => ['README.txt', '/Version (\d+)/', 5],
@@ -67,7 +67,7 @@ function libraries_test_libraries_info() {
   // Test a top-level files property.
   $libraries['example_files'] = [
     'name' => 'Example files',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1',
     'files' => [
       'js' => ['example_1.js'],
@@ -81,7 +81,7 @@ function libraries_test_libraries_info() {
   // these files should be automatically loaded when the library is loaded.
   $libraries['example_integration_files'] = [
     'name' => 'Example integration files',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1',
     'integration files' => [
       'libraries_test' => [
@@ -95,7 +95,7 @@ function libraries_test_libraries_info() {
   // Test version overloading.
   $libraries['example_versions'] = [
     'name' => 'Example versions',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '2',
     'versions' => [
       '1' => [
@@ -118,7 +118,7 @@ function libraries_test_libraries_info() {
   // Test variant detection.
   $libraries['example_variant_missing'] = [
     'name' => 'Example variant missing',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1',
     'variants' => [
       'example_variant' => [
@@ -135,7 +135,7 @@ function libraries_test_libraries_info() {
 
   $libraries['example_variant'] = [
     'name' => 'Example variant',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1',
     'variants' => [
       'example_variant' => [
@@ -153,7 +153,7 @@ function libraries_test_libraries_info() {
   // Test correct behaviour with multiple versions and multiple variants.
   $libraries['example_versions_and_variants'] = [
     'name' => 'Example versions and variants',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '2',
     'versions' => [
       '1' => [
@@ -209,27 +209,27 @@ function libraries_test_libraries_info() {
   // This library acts as a dependency for the libraries below.
   $libraries['example_dependency'] = [
     'name' => 'Example dependency',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1.1',
     'files' => ['js' => ['example_1.js']],
   ];
   $libraries['example_dependency_missing'] = [
     'name' => 'Example dependency missing',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1',
     'dependencies' => ['example_missing'],
     'files' => ['js' => ['example_1.js']],
   ];
   $libraries['example_dependency_incompatible'] = [
     'name' => 'Example dependency incompatible',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1',
     'dependencies' => ['example_dependency (>1.1)'],
     'files' => ['js' => ['example_1.js']],
   ];
   $libraries['example_dependency_compatible'] = [
     'name' => 'Example dependency compatible',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1',
     'dependencies' => ['example_dependency (>=1.1)'],
     'files' => ['js' => ['example_1.js']],
@@ -238,7 +238,7 @@ function libraries_test_libraries_info() {
   // Test the applying of callbacks.
   $libraries['example_callback'] = [
     'name' => 'Example callback',
-    'library path' => drupal_get_path('module', 'libraries') . '/tests/example',
+    'library path' => \Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example',
     'version' => '1',
     'versions' => [
       '1' => [
@@ -292,7 +292,7 @@ function libraries_test_libraries_info() {
  * Implements hook_libraries_info_file_paths()
  */
 function libraries_test_libraries_info_file_paths() {
-  return [drupal_get_path('module', 'libraries') . '/tests/example'];
+  return [\Drupal::service('extension.list.module')->getPath('libraries') . '/tests/example'];
 }
 
 /**

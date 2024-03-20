@@ -14,7 +14,7 @@ class LibrariesUnitTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['libraries'];
+  protected static $modules = ['libraries'];
 
   /**
    * Tests libraries_get_path().
@@ -25,7 +25,7 @@ class LibrariesUnitTest extends KernelTestBase {
     // path' up-front. This is only used for testing purposed and is strongly
     // discouraged as it defeats the purpose of Libraries API in the first
     // place.
-    $this->assertEqual(libraries_get_path('example'), FALSE, 'libraries_get_path() returns FALSE for a missing library.');
+    $this->assertEquals(libraries_get_path('example'), FALSE, 'libraries_get_path() returns FALSE for a missing library.');
   }
 
   /**
@@ -47,7 +47,7 @@ class LibrariesUnitTest extends KernelTestBase {
       ],
     ];
     libraries_prepare_files($library, NULL, NULL);
-    $this->assertEqual($expected, $library, 'libraries_prepare_files() works correctly.');
+    $this->assertEquals($expected, $library, 'libraries_prepare_files() works correctly.');
   }
 
 }

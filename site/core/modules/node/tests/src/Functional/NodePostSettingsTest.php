@@ -3,8 +3,7 @@
 namespace Drupal\Tests\node\Functional;
 
 /**
- * Tests that the post information (submitted by Username on date) text displays
- * appropriately.
+ * Tests the node setting for displaying author and date information.
  *
  * @group node
  */
@@ -15,6 +14,9 @@ class NodePostSettingsTest extends NodeTestBase {
    */
   protected $defaultTheme = 'stark';
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
 

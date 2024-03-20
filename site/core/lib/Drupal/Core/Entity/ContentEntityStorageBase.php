@@ -158,9 +158,6 @@ abstract class ContentEntityStorageBase extends EntityStorageBase implements Con
    *
    * @return string|null
    *   The bundle or NULL if not set.
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   *   When a corresponding bundle cannot be found and is expected.
    */
   protected function getBundleFromValues(array $values): ?string {
     $bundle = NULL;
@@ -1113,9 +1110,14 @@ abstract class ContentEntityStorageBase extends EntityStorageBase implements Con
       $this->entityTypeId . '_values',
       'entity_field_info',
     ];
+    $items = [];
     foreach ($entities as $id => $entity) {
-      $this->cacheBackend->set($this->buildCacheId($id), $entity, CacheBackendInterface::CACHE_PERMANENT, $cache_tags);
+      $items[$this->buildCacheId($id)] = [
+        'data' => $entity,
+        'tags' => $cache_tags,
+      ];
     }
+    $this->cacheBackend->setMultiple($items);
   }
 
   /**

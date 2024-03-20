@@ -103,7 +103,7 @@ interface ModuleHandlerInterface {
    *   information discovered during a Drupal\Core\Extension\ExtensionDiscovery
    *   scan.
    *
-   * @return
+   * @return array
    *   The same array with the new keys for each module:
    *   - requires: An array with the keys being the modules that this module
    *     requires.
@@ -425,8 +425,10 @@ interface ModuleHandlerInterface {
   public function alterDeprecated($description, $type, &$data, &$context1 = NULL, &$context2 = NULL);
 
   /**
-   * Returns an array of directories for all enabled modules. Useful for
-   * tasks such as finding a file that exists in all module directories.
+   * Returns an array of directories for all enabled modules.
+   *
+   * This is useful for tasks such as finding a file that exists in all module
+   * directories.
    *
    * @return array
    */

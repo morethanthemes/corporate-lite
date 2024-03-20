@@ -60,7 +60,7 @@ function user_help($route_name, RouteMatchInterface $route_match) {
       return '<p>' . t("This web page allows administrators to register new users. Users' email addresses and usernames must be unique.") . '</p>';
 
     case 'user.admin_permissions':
-      return '<p>' . t('Permissions let you control what users can do and see on your site. You can define a specific set of permissions for each role. (See the <a href=":role">Roles</a> page to create a role.) Any permissions granted to the Authenticated user role will be given to any user who is logged in to your site. From the <a href=":settings">Account settings</a> page, you can make any role into an Administrator role for the site, meaning that role will be granted all new permissions automatically. You should be careful to ensure that only trusted users are given this access and level of control of your site.', [':role' => Url::fromRoute('entity.user_role.collection')->toString(), ':settings' => Url::fromRoute('entity.user.admin_form')->toString()]) . '</p>';
+      return '<p>' . t('Permissions let you control what users can do and see on your site. You can define a specific set of permissions for each role. (See the <a href=":role">Roles</a> page to create a role.) Any permissions granted to the Authenticated user role will be given to any user who is logged in to your site. On the <a href=":settings">Role settings</a> page, you can make any role into an Administrator role for the site, meaning that role will be granted all permissions. You should be careful to ensure that only trusted users are given this access and level of control of your site.', [':role' => Url::fromRoute('entity.user_role.collection')->toString(), ':settings' => Url::fromRoute('user.role.settings')->toString()]) . '</p>';
 
     case 'entity.user_role.collection':
       return '<p>' . t('A role defines a group of users that have certain privileges. These privileges are defined on the <a href=":permissions">Permissions page</a>. Here, you can define the names and the display sort order of the roles on your site. It is recommended to order roles from least permissive (for example, Anonymous user) to most permissive (for example, Administrator user). Users who are not logged in have the Anonymous user role. Users who are logged in have the Authenticated user role, plus any other roles granted to their user account.', [':permissions' => Url::fromRoute('user.admin_permissions')->toString()]) . '</p>';
@@ -167,7 +167,7 @@ function user_user_presave(UserInterface $account) {
  * @param string $mail
  *   String with the account's email address.
  *
- * @return object|bool
+ * @return \Drupal\user\UserInterface|false
  *   A fully-loaded $user object upon successful user load or FALSE if user
  *   cannot be loaded.
  *
@@ -185,7 +185,7 @@ function user_load_by_mail($mail) {
  * @param string $name
  *   String with the account's user name.
  *
- * @return object|bool
+ * @return \Drupal\user\UserInterface|false
  *   A fully-loaded $user object upon successful user load or FALSE if user
  *   cannot be loaded.
  *
@@ -459,7 +459,7 @@ function user_login_finalize(UserInterface $account) {
   \Drupal::logger('user')->notice('Session opened for %name.', ['%name' => $account->getAccountName()]);
   // Update the user table timestamp noting user has logged in.
   // This is also used to invalidate one-time login links.
-  $account->setLastLoginTime(REQUEST_TIME);
+  $account->setLastLoginTime(\Drupal::time()->getRequestTime());
   \Drupal::entityTypeManager()
     ->getStorage('user')
     ->updateLastLoginTimestamp($account);
@@ -521,7 +521,7 @@ function user_user_logout(AccountInterface $account) {
  *   they can change their password.
  */
 function user_pass_reset_url($account, $options = []) {
-  $timestamp = REQUEST_TIME;
+  $timestamp = \Drupal::time()->getRequestTime();
   $langcode = $options['langcode'] ?? $account->getPreferredLangcode();
   return Url::fromRoute('user.reset',
     [
@@ -554,7 +554,7 @@ function user_pass_reset_url($account, $options = []) {
  * @see \Drupal\user\Controller\UserController::confirmCancel()
  */
 function user_cancel_url(UserInterface $account, $options = []) {
-  $timestamp = REQUEST_TIME;
+  $timestamp = \Drupal::time()->getRequestTime();
   $langcode = $options['langcode'] ?? $account->getPreferredLangcode();
   $url_options = ['absolute' => TRUE, 'language' => \Drupal::languageManager()->getLanguage($langcode)];
   return Url::fromRoute('user.cancel_confirm', [
@@ -579,7 +579,7 @@ function user_cancel_url(UserInterface $account, $options = []) {
  * @param \Drupal\user\UserInterface $account
  *   An object containing the user account.
  * @param int $timestamp
- *   A UNIX timestamp, typically REQUEST_TIME.
+ *   A UNIX timestamp, typically \Drupal::time()->getRequestTime().
  *
  * @return string
  *   A string that is safe for use in URLs and SQL statements.
@@ -1018,8 +1018,7 @@ function user_role_revoke_permissions($rid, array $permissions = []) {
 }
 
 /**
- * Conditionally create and send a notification email when a certain
- * operation happens on the given user account.
+ * Creates and sends a notification email following a change to a user account.
  *
  * @param string $op
  *   The operation being performed on the account. Possible values:
@@ -1141,9 +1140,10 @@ function user_modules_uninstalled($modules) {
  *   An array of key/value pairs to be saved into a cookie.
  */
 function user_cookie_save(array $values) {
+  $request_time = \Drupal::time()->getRequestTime();
   foreach ($values as $field => $value) {
     // Set cookie for 365 days.
-    setrawcookie('Drupal.visitor.' . $field, rawurlencode($value), REQUEST_TIME + 31536000, '/');
+    setrawcookie('Drupal.visitor.' . $field, rawurlencode($value), $request_time + 31536000, '/');
   }
 }
 
@@ -1154,7 +1154,7 @@ function user_cookie_save(array $values) {
  *   A cookie name such as 'homepage'.
  */
 function user_cookie_delete($cookie_name) {
-  setrawcookie('Drupal.visitor.' . $cookie_name, '', REQUEST_TIME - 3600, '/');
+  setrawcookie('Drupal.visitor.' . $cookie_name, '', \Drupal::time()->getRequestTime() - 3600, '/');
 }
 
 /**

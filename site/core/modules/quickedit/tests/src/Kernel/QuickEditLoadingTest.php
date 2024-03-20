@@ -9,10 +9,10 @@ use Drupal\Tests\node\Traits\NodeCreationTrait;
 use Drupal\Tests\user\Traits\UserCreationTrait;
 
 /**
- * Tests loading of in-place editing functionality and lazy loading of its
- * in-place editors.
+ * Tests loading of in-place editing and lazy loading of in-place editors.
  *
  * @group quickedit
+ * @group legacy
  */
 class QuickEditLoadingTest extends KernelTestBase {
 
@@ -66,8 +66,7 @@ class QuickEditLoadingTest extends KernelTestBase {
   }
 
   /**
-   * Tests that Quick Edit doesn't make fields rendered with display options
-   * editable.
+   * Tests that fields rendered with display options are not editable.
    */
   public function testDisplayOptions() {
     $node = Node::load(1);

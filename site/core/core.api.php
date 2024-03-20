@@ -889,6 +889,10 @@
  *   Note that $container here is an instance of
  *   \Drupal\Core\DependencyInjection\ContainerBuilder.
  *
+ * @section lazy_services Lazy services
+ * Some services can be declared as lazy to improve performance. See @link
+ * lazy_services Lazy Services @endlink for details.
+ *
  * @see https://www.drupal.org/node/2133171
  * @see core.services.yml
  * @see \Drupal
@@ -1802,6 +1806,7 @@
  * The queue system allows placing items in a queue and processing them later.
  * The system tries to ensure that only one consumer can process an item.
  *
+ * @section create_queues Creating queues
  * Before a queue can be used it needs to be created by
  * Drupal\Core\Queue\QueueInterface::createQueue().
  *
@@ -1826,6 +1831,7 @@
  * needs to be passed to Drupal\Core\Queue\QueueInterface::deleteItem() once
  * processing is completed.
  *
+ * @section queue_backends Queue backends
  * There are two kinds of queue backends available: reliable, which preserves
  * the order of messages and guarantees that every item will be executed at
  * least once. The non-reliable kind only does a best effort to preserve order
@@ -1919,6 +1925,8 @@
  * instead of executing the tasks directly. To do this, first define one or
  * more queues via a \Drupal\Core\Annotation\QueueWorker plugin. Then, add items
  * that need to be processed to the defined queues.
+ *
+ * @see queue
  */
 function hook_cron() {
   // Short-running operation example, not using a queue:
@@ -1978,11 +1986,27 @@ function hook_data_type_info_alter(&$data_types) {
  * @see \Drupal\Core\Queue\QueueWorkerInterface
  * @see \Drupal\Core\Annotation\QueueWorker
  * @see \Drupal\Core\Cron
+ *
+ * @ingroup queue
  */
 function hook_queue_info_alter(&$queues) {
   // This site has many feeds so let's spend 90 seconds on each cron run
   // updating feeds instead of the default 60.
   $queues['aggregator_feeds']['cron']['time'] = 90;
+}
+
+/**
+ * Alter the information provided in \Drupal\Core\Condition\ConditionManager::getDefinitions().
+ *
+ * @param array $definitions
+ *   The array of condition definitions.
+ */
+function hook_condition_info_alter(array &$definitions) {
+  // Add custom or modify existing condition definitions.
+  if (isset($definitions['node_type']) && $definitions['node_type']['class'] == 'Drupal\node\Plugin\Condition\NodeType') {
+    // If the node_type's class is unaltered, use a custom implementation.
+    $definitions['node_type']['class'] = 'Drupal\mymodule\Plugin\Condition\NodeType';
+  }
 }
 
 /**
@@ -2444,6 +2468,28 @@ function hook_validation_constraint_alter(array &$definitions) {
  *   autocomplete, as a \Symfony\Component\HttpFoundation\JsonResponse object.
  *   See the @link menu Routing topic @endlink for more information about
  *   routing.
+ *
+ * @section sec_query Query parameters in Ajax requests
+ * If a form uses an Ajax field, all the query parameters in the current request
+ * will be also added to the Ajax POST requests along with an additional
+ * 'ajax_form=1' parameter (See \Drupal\Core\Render\Element\RenderElement).
+ * @code
+ * $settings['options']['query'] += \Drupal::request()->query->all();
+ * $settings['options']['query'][FormBuilderInterface::AJAX_FORM_REQUEST] = TRUE;
+ * @endcode
+ *
+ * Form elements of type 'managed_file' will have an additional
+ * 'element_parents' query parameter in Ajax POST requests. This parameter will
+ * include the name of the element and its parents as per the render array.
+ * This helps to identify the position of the element in the form (See
+ * \Drupal\file\Element\ManagedFile).
+ * @code
+ * 'options' => [
+ *   'query' => [
+ *     'element_parents' => implode('/', $element['#array_parents']),
+ *   ],
+ * ],
+ * @endcode
  */
 
 /**
@@ -2491,6 +2537,32 @@ function hook_validation_constraint_alter(array &$definitions) {
  * information on services and the dependency injection container.
  *
  * @}
+ */
+
+/**
+ * @defgroup lazy_services Lazy Services
+ * @{
+ * Lazy services overview
+ *
+ * A service can be declared as lazy in order to improve performance. Classes
+ * that inject a lazy service receive a proxy class instead, and when a method
+ * on the lazy service is called, the proxy class gets the service from the
+ * container and forwards the method call. This means that the lazy service is
+ * only instantiated when it is needed.
+ *
+ * This is useful because some classes may inject a service which is expensive
+ * to instantiate (because it has multiple dependencies of its own), but is only
+ * used in exceptional cases. This would make the class dependent on the
+ * expensive service and all of the expensive service's dependencies.
+ *
+ * Making the expensive service lazy means that the class is only dependent on
+ * the proxy service, and not on all the dependencies of the lazy service.
+ *
+ * To define a service as lazy, add @code lazy: true @endcode to the service
+ * definition, and use the @code core/scripts/generate-proxy.sh @endcode script
+ * to generate the proxy class.
+ *
+ * @see core/scripts/generate-proxy.sh
  */
 
 /**

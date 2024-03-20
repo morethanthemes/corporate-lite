@@ -154,6 +154,8 @@ class Media extends EditorialContentEntityBase implements MediaInterface {
    */
   protected function updateThumbnail($from_queue = FALSE) {
     $this->thumbnail->target_id = $this->loadThumbnail($this->getThumbnailUri($from_queue))->id();
+    $this->thumbnail->width = $this->getThumbnailWidth($from_queue);
+    $this->thumbnail->height = $this->getThumbnailHeight($from_queue);
 
     // Set the thumbnail alt.
     $media_source = $this->getSource();
@@ -259,6 +261,56 @@ class Media extends EditorialContentEntityBase implements MediaInterface {
   }
 
   /**
+   * Gets the width of the thumbnail of a media item.
+   *
+   * @param bool $from_queue
+   *   Specifies whether the thumbnail is being fetched from the queue.
+   *
+   * @return int|null
+   *   The width of the thumbnail of the media item or NULL if the media is new
+   *   and the thumbnails are set to be downloaded in a queue.
+   *
+   * @internal
+   */
+  protected function getThumbnailWidth(bool $from_queue): ?int {
+    $thumbnails_queued = $this->bundle->entity->thumbnailDownloadsAreQueued();
+    if ($thumbnails_queued && $this->isNew()) {
+      return NULL;
+    }
+    elseif ($thumbnails_queued && !$from_queue) {
+      return $this->get('thumbnail')->width;
+    }
+
+    $source = $this->getSource();
+    return $source->getMetadata($this, $source->getPluginDefinition()['thumbnail_width_metadata_attribute']);
+  }
+
+  /**
+   * Gets the height of the thumbnail of a media item.
+   *
+   * @param bool $from_queue
+   *   Specifies whether the thumbnail is being fetched from the queue.
+   *
+   * @return int|null
+   *   The height of the thumbnail of the media item or NULL if the media is new
+   *   and the thumbnails are set to be downloaded in a queue.
+   *
+   * @internal
+   */
+  protected function getThumbnailHeight(bool $from_queue): ?int {
+    $thumbnails_queued = $this->bundle->entity->thumbnailDownloadsAreQueued();
+    if ($thumbnails_queued && $this->isNew()) {
+      return NULL;
+    }
+    elseif ($thumbnails_queued && !$from_queue) {
+      return $this->get('thumbnail')->height;
+    }
+
+    $source = $this->getSource();
+    return $source->getMetadata($this, $source->getPluginDefinition()['thumbnail_height_metadata_attribute']);
+  }
+
+  /**
    * Determines if the source field value has changed.
    *
    * The comparison uses MediaSourceInterface::getSourceFieldValue() to ensure
@@ -296,6 +348,10 @@ class Media extends EditorialContentEntityBase implements MediaInterface {
    */
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
+
+    if (!$this->getOwner()) {
+      $this->setOwnerId(0);
+    }
 
     // If no thumbnail has been explicitly set, use the default thumbnail.
     if ($this->get('thumbnail')->isEmpty()) {

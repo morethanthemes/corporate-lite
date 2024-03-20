@@ -6,8 +6,7 @@ use Drupal\Core\Database\Database;
 use Drupal\node\NodeInterface;
 
 /**
- * Create a node with revisions and test viewing, saving, reverting, and
- * deleting revisions for user with access to all.
+ * Tests global node CRUD operation permissions.
  *
  * @group node
  */
@@ -21,7 +20,7 @@ class NodeRevisionsAllTest extends NodeTestBase {
   /**
    * A list of nodes created to be used as starting point of different tests.
    *
-   * @var Drupal\node\NodeInterface[]
+   * @var \Drupal\node\NodeInterface[]
    */
   protected $nodes;
 

@@ -78,7 +78,7 @@ class MediaTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'starterkit_theme';
 
   /**
    * {@inheritdoc}
@@ -439,18 +439,16 @@ class MediaTest extends WebDriverTestBase {
     $this->waitForEditor();
     $this->assertNotEmpty($assert_session->waitForElement('css', '.ck-widget.drupal-media .this-error-message-is-themeable'));
 
-    // Test when using the classy theme, an additional class is added in
-    // classy/templates/content/media-embed-error.html.twig.
-    $this->assertTrue($this->container->get('theme_installer')->install(['classy']));
+    // Test when using the starterkit_theme theme, an additional class is added
+    // to the error, which is supported by
+    // stable9/templates/content/media-embed-error.html.twig.
+    $this->assertTrue($this->container->get('theme_installer')->install(['starterkit_theme']));
     $this->config('system.theme')
-      ->set('default', 'classy')
+      ->set('default', 'starterkit_theme')
       ->save();
     $this->drupalGet($this->host->toUrl('edit-form'));
     $this->waitForEditor();
-    $this->assertNotEmpty($assert_session->waitForElement('css', '.ck-widget.drupal-media .this-error-message-is-themeable.media-embed-error--missing-source'));
-    // @todo Uncomment this in https://www.drupal.org/project/ckeditor5/issues/3194084.
-    // @codingStandardsIgnoreLine
-    //$assert_session->responseContains('classy/css/components/media-embed-error.css');
+    $this->assertNotEmpty($assert_session->waitForElement('css', '.ck-widget.drupal-media .this-error-message-is-themeable'));
 
     // Test that restoring a valid UUID results in the media embed preview
     // displaying.
@@ -477,8 +475,8 @@ class MediaTest extends WebDriverTestBase {
 
     // Configure a different default and admin theme, like on most Drupal sites.
     $this->config('system.theme')
-      ->set('default', 'stable')
-      ->set('admin', 'classy')
+      ->set('default', 'stable9')
+      ->set('admin', 'starterkit_theme')
       ->save();
 
     // Assert that when looking at an embedded entity in the CKEditor Widget,
@@ -489,7 +487,7 @@ class MediaTest extends WebDriverTestBase {
     $assert_session = $this->assertSession();
     $this->assertNotEmpty($assert_session->waitForElementVisible('css', 'img[src*="image-test.png"]'));
     $element = $assert_session->elementExists('css', '[data-media-embed-test-active-theme]');
-    $this->assertSame('stable', $element->getAttribute('data-media-embed-test-active-theme'));
+    $this->assertSame('stable9', $element->getAttribute('data-media-embed-test-active-theme'));
     // Assert that the first preview request transferred >500 B over the wire.
     // Then toggle source mode on and off. This causes the CKEditor widget to be
     // destroyed and then reconstructed. Assert that during this reconstruction,
@@ -614,8 +612,28 @@ class MediaTest extends WebDriverTestBase {
     $editor_dom = $this->getEditorDataAsDom();
     $this->assertEquals('Llamas are the most awesome ever', $editor_dom->getElementsByTagName('drupal-media')->item(0)->getAttribute('data-caption'));
 
+    // Ensure that caption can contain elements such as <br>.
+    $this->pressEditorButton('Source');
+    $source_text_area = $assert_session->waitForElement('css', '.ck-source-editing-area textarea');
+    $source_text = $source_text_area->getValue();
+    $source_text_area->setValue(str_replace('data-caption="Llamas are the most awesome ever"', 'data-caption="Llamas are the most<br>awesome ever"', $source_text));
+    // Click source again to make source inactive.
+    $this->pressEditorButton('Source');
+    // Check that the source mode is toggled off.
+    $assert_session->elementNotExists('css', '.ck-source-editing-area textarea');
+    // Put back the caption as it was before.
+    $this->pressEditorButton('Source');
+    $source_text_area = $assert_session->waitForElement('css', '.ck-source-editing-area textarea');
+    $source_text = $source_text_area->getValue();
+    $source_text_area->setValue(str_replace('data-caption="Llamas are the most&lt;br&gt;awesome ever"', 'data-caption="Llamas are the most awesome ever"', $source_text));
+    // Click source again to make source inactive.
+    $this->pressEditorButton('Source');
+    // Check that the source mode is toggled off.
+    $assert_session->elementNotExists('css', '.ck-source-editing-area textarea');
+
     // Ensure that caption can be linked.
     $this->assertNotEmpty($figcaption = $assert_session->waitForElement('css', '.drupal-media figcaption'));
+    $figcaption->click();
     $this->selectTextInsideElement('.drupal-media figcaption');
     $this->assertNotEmpty($assert_session->waitForElement('css', '.drupal-media figcaption.ck-editor__nested-editable'));
     $this->pressEditorButton('Link');
@@ -1042,6 +1060,12 @@ class MediaTest extends WebDriverTestBase {
 
     $this->assertNotEmpty($drupalmedia = $assert_session->waitForElementVisible('css', '.ck-content .ck-widget.drupal-media'));
     $drupalmedia->click();
+    $this->assertVisibleBalloon('.ck-toolbar[aria-label="Drupal Media toolbar"]');
+
+    // Turn off caption, so we don't accidentally put our link in that text
+    // field instead of on the actual media.
+    $this->getBalloonButton('Toggle caption off')->click();
+    $assert_session->assertNoElementAfterWait('css', 'figure.drupal-media > figcaption');
 
     $this->assertVisibleBalloon('.ck-toolbar[aria-label="Drupal Media toolbar"]');
     $this->getBalloonButton('Link media')->click();
@@ -1114,7 +1138,7 @@ class MediaTest extends WebDriverTestBase {
     if ($can_use_format) {
       $this->waitForEditor();
       if ($media_embed_enabled) {
-        // The preview rendering, which in this test will use Classy's
+        // The preview rendering, which in this test will use Starterkit theme's
         // media.html.twig template, will fail without the CSRF token/header.
         // @see ::testEmbeddedMediaPreviewWithCsrfToken()
         $this->assertNotEmpty($assert_session->waitForElementVisible('css', 'article.media'));
@@ -1484,7 +1508,7 @@ class MediaTest extends WebDriverTestBase {
     $drupal_media_element = $editor_dom->getElementsByTagName('drupal-media')
       ->item(0);
     $this->assertFalse($drupal_media_element->hasAttribute('data-view-mode'));
-    $assert_session->elementExists('css', 'article.media--view-mode-view-mode-1');
+    $assert_session->waitForElement('css', 'article.media--view-mode-view-mode-1');
 
     // Test that setting allowed_view_modes back to two items restores the
     // field.
@@ -1527,7 +1551,7 @@ class MediaTest extends WebDriverTestBase {
     $this->assertVisibleBalloon('[aria-label="Drupal Media toolbar"]');
     $this->getBalloonButton('View Mode 1')->click();
     $this->getBalloonButton('View Mode 2 has Numeric ID')->click();
-    $assert_session->elementExists('css', 'article.media--view-mode-_2222');
+    $assert_session->waitForElement('css', 'article.media--view-mode-_2222');
     $this->assertEmpty($assert_session->waitForElementVisible('css', '.drupal-media figcaption'));
 
     // Test that a media with no view modes configured will be

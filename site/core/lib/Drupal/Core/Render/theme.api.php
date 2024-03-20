@@ -606,7 +606,26 @@ function hook_preprocess_HOOK(&$variables) {
  * must otherwise make sure that the hook implementation is available at
  * any given time.
  *
- * @todo Add @code sample.
+ * Suggestions must begin with the value of HOOK, followed by two underscores to be discoverable.
+ *
+ * In the following example, we provide suggestions to
+ * node templates based bundle, id, and view mode.
+ *
+ * @code
+ * function node_theme_suggestions_node(array $variables) {
+ *   $suggestions = [];
+ *   $node = $variables['elements']['#node'];
+ *   $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+ *   $suggestions[] = 'node__' . $sanitized_view_mode;
+ *   $suggestions[] = 'node__' . $node->bundle();
+ *   $suggestions[] = 'node__' . $node->bundle() . '__' . $sanitized_view_mode;
+ *   $suggestions[] = 'node__' . $node->id();
+ *   $suggestions[] = 'node__' . $node->id() . '__' . $sanitized_view_mode;
+ *
+ *   return $suggestions;
+ * }
+ *
+ * @endcode
  *
  * @param array $variables
  *   An array of variables passed to the theme hook. Note that this hook is
@@ -817,8 +836,7 @@ function hook_element_plugin_alter(array &$definitions) {
 }
 
 /**
- * Perform necessary alterations to the JavaScript before it is presented on
- * the page.
+ * Alters JavaScript before it is presented on the page.
  *
  * @param $javascript
  *   An array of all JavaScript being presented on the page.
@@ -963,24 +981,24 @@ function hook_js_settings_alter(array &$settings, \Drupal\Core\Asset\AttachedAss
  * @see \Drupal\Core\Asset\LibraryDiscoveryParser::parseLibraryInfo()
  */
 function hook_library_info_alter(&$libraries, $extension) {
-  // Update Farbtastic to version 2.0.
-  if ($extension == 'core' && isset($libraries['jquery.farbtastic'])) {
+  // Update imaginary library 'foo' to version 2.0.
+  if ($extension === 'core' && isset($libraries['foo'])) {
     // Verify existing version is older than the one we are updating to.
-    if (version_compare($libraries['jquery.farbtastic']['version'], '2.0', '<')) {
-      // Update the existing Farbtastic to version 2.0.
-      $libraries['jquery.farbtastic']['version'] = '2.0';
+    if (version_compare($libraries['foo']['version'], '2.0', '<')) {
+      // Update the existing 'foo' to version 2.0.
+      $libraries['foo']['version'] = '2.0';
       // To accurately replace library files, the order of files and the options
       // of each file have to be retained; e.g., like this:
-      $old_path = 'assets/vendor/farbtastic';
+      $old_path = 'assets/vendor/foo';
       // Since the replaced library files are no longer located in a directory
       // relative to the original extension, specify an absolute path (relative
       // to DRUPAL_ROOT / base_path()) to the new location.
-      $new_path = '/' . \Drupal::service('extension.list.module')->getPath('farbtastic_update') . '/js';
+      $new_path = '/' . \Drupal::service('extension.list.module')->getPath('foo_update') . '/js';
       $new_js = [];
       $replacements = [
-        $old_path . '/farbtastic.js' => $new_path . '/farbtastic-2.0.js',
+        $old_path . '/foo.js' => $new_path . '/foo-2.0.js',
       ];
-      foreach ($libraries['jquery.farbtastic']['js'] as $source => $options) {
+      foreach ($libraries['foo']['js'] as $source => $options) {
         if (isset($replacements[$source])) {
           $new_js[$replacements[$source]] = $options;
         }
@@ -988,7 +1006,7 @@ function hook_library_info_alter(&$libraries, $extension) {
           $new_js[$source] = $options;
         }
       }
-      $libraries['jquery.farbtastic']['js'] = $new_js;
+      $libraries['foo']['js'] = $new_js;
     }
   }
 }
@@ -1132,10 +1150,10 @@ function hook_page_bottom(array &$page_bottom) {
  *   - file: The file the implementation resides in. This file will be included
  *     prior to the theme being rendered, to make sure that the preprocess
  *     functions in this file are actually loaded.
- *   - path: Override the path of the file to be used. Ordinarily the module or
- *     theme path will be used, but if the file will not be in the default
- *     path, include it here. This path should be relative to the Drupal root
- *     directory.
+ *   - path: If specified, overrides the path to the directory that contains the
+ *     file to be used. This path should be relative to the Drupal root
+ *     directory. If not provided, the path will be set to the module or theme's
+ *     templates directory.
  *   - template: If specified, this is the template name. Do not add 'html.twig'
  *     on the end of the template name. The extension will be added
  *     automatically by the default rendering engine (which is Twig.) If 'path'

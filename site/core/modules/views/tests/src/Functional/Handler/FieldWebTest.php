@@ -48,6 +48,9 @@ class FieldWebTest extends ViewTestBase {
     'views_test_data_name' => 'name',
   ];
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp($import_test_views = TRUE, $modules = ['views_test_config']): void {
     parent::setUp($import_test_views, $modules);
 
@@ -308,11 +311,11 @@ class FieldWebTest extends ViewTestBase {
     $output = $renderer->executeInRenderContext(new RenderContext(), function () use ($id_field, $row) {
       return $id_field->theme($row);
     });
-    // The url has a space in it, so to check we have to decode the url output.
+    // The URL has a space in it, so to check we have to decode the URL output.
     $this->assertSubString(urldecode($output), $path);
 
     // Tests the external flag.
-    // Switch on the external flag should output an external url as well.
+    // Switch on the external flag should output an external URL as well.
     $id_field->options['alter']['external'] = TRUE;
     $id_field->options['alter']['path'] = $path = 'www.drupal.org';
     $output = $renderer->executeInRenderContext(new RenderContext(), function () use ($id_field, $row) {
@@ -320,7 +323,7 @@ class FieldWebTest extends ViewTestBase {
     });
     $this->assertSubString($output, 'http://www.drupal.org');
 
-    // Setup a not external url, which shouldn't lead to an external url.
+    // Setup a not external URL, which shouldn't lead to an external URL.
     $id_field->options['alter']['external'] = FALSE;
     $id_field->options['alter']['path'] = $path = 'www.drupal.org';
     $output = $renderer->executeInRenderContext(new RenderContext(), function () use ($id_field, $row) {

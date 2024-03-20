@@ -4,7 +4,7 @@ description: 'Support module for the Quick Edit module tests.'
 package: Testing
 # version: VERSION
 
-# Information added by Drupal.org packaging script on 2022-10-06
-version: '9.4.8'
+# Information added by Drupal.org packaging script on 2023-09-20
+version: '9.5.11'
 project: 'drupal'
-datestamp: 1665072456
+datestamp: 1695228127

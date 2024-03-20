@@ -6,8 +6,7 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\views\Views;
 
 /**
- * Ensure that data added as terms appears in RSS feeds if "RSS Category" format
- * is selected.
+ * Tests the taxonomy RSS display.
  *
  * @group taxonomy
  */
@@ -39,6 +38,9 @@ class RssTest extends TaxonomyTestBase {
    */
   protected $fieldName;
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
 

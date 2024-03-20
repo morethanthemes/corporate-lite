@@ -1,10 +1,10 @@
 name: Test Wild West
 type: theme
-description: A theme that doesn't use Stable as its base. It tests the wild west instead.
+description: A theme that doesn't use Stable 9 as its base. It tests the wild west instead.
 # version: VERSION
 base theme: false
 
-# Information added by Drupal.org packaging script on 2022-10-06
-version: '9.4.8'
+# Information added by Drupal.org packaging script on 2023-09-20
+version: '9.5.11'
 project: 'drupal'
-datestamp: 1665072456
+datestamp: 1695228127

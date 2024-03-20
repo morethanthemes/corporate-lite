@@ -3,6 +3,7 @@
 namespace Drupal\Tests\layout_builder\FunctionalJavascript;
 
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
+use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\Tests\system\Functional\Cache\AssertPageCacheContextsAndTagsTrait;
 
 /**
@@ -31,7 +32,7 @@ class ContextualLinksTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $defaultTheme = 'classy';
+  protected $defaultTheme = 'starterkit_theme';
 
   /**
    * {@inheritdoc}
@@ -41,8 +42,6 @@ class ContextualLinksTest extends WebDriverTestBase {
 
     $user = $this->drupalCreateUser([
       'configure any layout',
-      'administer node display',
-      'administer node fields',
       'access contextual links',
       'administer nodes',
       'bypass node access',
@@ -51,6 +50,10 @@ class ContextualLinksTest extends WebDriverTestBase {
     $user->save();
     $this->drupalLogin($user);
     $this->createContentType(['type' => 'bundle_with_section_field']);
+    LayoutBuilderEntityViewDisplay::load('node.bundle_with_section_field.default')
+      ->enableLayoutBuilder()
+      ->setOverridable()
+      ->save();
 
     $this->createNode([
       'type' => 'bundle_with_section_field',
@@ -66,16 +69,8 @@ class ContextualLinksTest extends WebDriverTestBase {
    * Tests that the contextual links inside Layout Builder are removed.
    */
   public function testContextualLinks() {
+    // Skipped due to frequent random test failures.
     $page = $this->getSession()->getPage();
-
-    $field_ui_prefix = 'admin/structure/types/manage/bundle_with_section_field';
-
-    // Enable Layout Builder and overrides.
-    $this->drupalGet("{$field_ui_prefix}/display/default");
-    $this->submitForm([
-      'layout[enabled]' => TRUE,
-      'layout[allow_custom]' => TRUE,
-    ], 'Save');
 
     $this->drupalGet('node/1/layout');
 
@@ -127,7 +122,6 @@ class ContextualLinksTest extends WebDriverTestBase {
    * @internal
    */
   protected function assertCorrectContextualLinksInUi(): void {
-    $this->markTestSkipped("Skipped temporarily for random fails.");
     $assert_session = $this->assertSession();
     $page = $this->getSession()->getPage();
     $this->assertNotEmpty($assert_session->waitForElementVisible('css', '.block-views-blocktest-block-view-block-2'));
